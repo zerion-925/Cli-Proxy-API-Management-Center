@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import type { ClientUsage, UsageMetrics, UsageRange } from '@/services/api/clientUsage';
+import { formatEstimatedUsd } from '../pricing';
+import { UsagePricingSummary } from './UsagePricingSummary';
 import styles from './ClientUsageMeter.module.scss';
 
 export type UsageStatus = 'loading' | 'ready' | 'error' | 'unsupported' | 'disconnected';
@@ -296,6 +298,12 @@ export function ClientUsageView({
                           {t(`usage_meter.${key}`)}
                         </th>
                       ))}
+                      {data.pricing.available && (
+                        <>
+                          <th scope="col">{t('usage_meter.pricing_priced_attempts')}</th>
+                          <th scope="col">{t('usage_meter.pricing_subtotal')}</th>
+                        </>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -315,6 +323,20 @@ export function ClientUsageView({
                             {index < 3 ? number(value) : observedTokens(value, row)}
                           </td>
                         ))}
+                        {data.pricing.available && (
+                          <>
+                            <td>
+                              {number(row.pricedAttempts)} / {number(row.attempts)}
+                            </td>
+                            <td>
+                              {formatEstimatedUsd(
+                                row.estimatedCostUsd,
+                                i18n.language,
+                                t('usage_meter.unavailable')
+                              )}
+                            </td>
+                          </>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -322,6 +344,7 @@ export function ClientUsageView({
               </div>
             </>
           )}
+          <UsagePricingSummary pricing={data.pricing} />
           <footer className={styles.footer}>
             <p>
               {t('usage_meter.earliest_event', {
@@ -330,7 +353,6 @@ export function ClientUsageView({
                   : t('usage_meter.unavailable'),
               })}
             </p>
-            <p>{t('usage_meter.cost_unavailable')}</p>
             <p>
               {t('usage_meter.health', {
                 failures: data.collection.ingestionFailures,

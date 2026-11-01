@@ -1,5 +1,26 @@
 # Persistent client usage meter implementation
 
+## models.dev pricing extension (local, not released)
+
+The plugin now obtains provider-scoped reference prices anonymously from `https://models.dev/api.json`; no pricing service or companion was added. Plugin local commit `8d13c55` extends the existing SQLite database with a normalized cached catalog, immutable per-event USD estimates and snapshot provenance. All seven frontend locales, source disclosure, priced/unpriced coverage, model/time row cost columns and small-value currency formatting are implemented. See `docs/models-dev-pricing.md` and `docs/models-dev-pricing-source.md` for configuration, mappings, constraints and exact semantics.
+
+Current development branches are `main` in both repositories, following the earlier separately authorized source delivery. This pricing extension has not been pushed, released, deployed or installed into production. The earlier v1.0.0 frontend release does not contain this extension. Earlier historical notes below describe the original implementation and its original test counts; this section supersedes their statements that pricing is unavailable.
+
+### Exercised pricing verification
+
+- Plugin `make verify`: passed, including tests/race/vet/build/official-host runtime.
+- Plugin `make runtime-race`: passed with race-instrumented host and ordinary native library; plugin logic also has in-process race tests. The previous dual-runtime sanitizer limitation remains.
+- Anonymous live catalog test: passed; 5,963,821 bytes,235 providers,8,940 raw model entries,8,712 normalized entries. Raw snapshot SHA256 `f2f089da079dbd94d318ccd2e4c6dd1941f9820342f2060397b91106a514c663`. Unsupported entries are not replaced with invented prices.
+- Official compiled-plugin runtime with real catalog and loopback synthetic inference: passed. Sanitized priced response exported to `tests/fixtures/usage-meter-pricing-official-runtime.json`:6 attempts,2 priced,4 unavailable; priced subtotal USD0.000048 and cache-read savings USD0.000006. No paid provider calls.
+- Frontend focused meter/pricing suites:29 passed,0 failed across6 files, including actual priced wire normalization and model/time reconciliation.
+- Full `bun run verify`: **not green**:1,896 passed,1 failed across1,897 tests. The sole failure remains `cooldown section rendering > keeps the reset action contextual and exposes pending state`, previously reproduced on the pre-meter baseline. No cooldown code was changed.
+- Separate `bun run lint` and `bun run build`: passed. Single-file `dist/index.html`3,765.49 kB; generated output is not committed.
+- Isolated browser: actual priced runtime wire rendered2/6 priced coverage, the real small-value subtotal/savings and source hash. Synthetic modes separately verify stale-source warning with preserved historical amounts and390px layout without page-level overflow. Screenshot-helper timeouts and the fallback are recorded in `tests/browser/README.md`.
+- Two independent final reviews found one API-boundary consistency issue: contradictory pricing summary/totals and savings coverage could be accepted. Fixed with strict coverage/nullability reconciliation, relative floating-point tolerance and regression tests. No additional concrete security/standards defects were established.
+- Lockfile and read-only upstream source unchanged. New logs use `/home/ubuntu/.hermes/cache/scratch/models-dev-*`.
+
+Pricing is a partial **API list-price estimate, not an invoice**. Provider/model lookup is exact or explicitly operator-mapped. Unresolved accounting/service tier/modality/cache-write TTL or missing necessary rates remain unavailable. Numeric zero is accepted only when published. Catalog refresh does not rewrite saved amounts or backfill unpriced events. Current cache age and immutable historical versions are disclosed separately. Local runtime evidence does not establish compatibility with the live production image or install the plugin there.
+
 ## Outcome
 
 Built and exercised a native plugin-owned SQLite3 meter plus the integrated existing dashboard. This replaces the earlier blocker-only report: the built-in historical read API is absent, but the official native plugin mechanism supports an independent usage observer and management-authenticated read routes without modifying upstream core.

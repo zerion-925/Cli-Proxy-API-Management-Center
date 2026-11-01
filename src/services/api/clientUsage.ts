@@ -18,6 +18,24 @@ export interface UsageMetrics {
   cacheRate: number | null;
   cacheRateDenominator: number;
   unknownTokenEvents: number;
+  pricedAttempts: number;
+  savingsPricedAttempts: number;
+  estimatedCostUsd: number | null;
+  estimatedCacheSavingsUsd: number | null;
+}
+export interface UsagePricing {
+  available: boolean;
+  source: 'models.dev' | null;
+  currency: 'USD' | null;
+  status: 'loading' | 'ready' | 'stale' | 'error' | 'disabled' | 'unavailable';
+  snapshotVersion: string | null;
+  fetchedAt: string | null;
+  snapshotVersions: string[];
+  pricedAttempts: number;
+  unpricedAttempts: number;
+  savingsPricedAttempts: number;
+  estimatedCostUsd: number | null;
+  estimatedCacheSavingsUsd: number | null;
 }
 export interface ClientUsage {
   collection: {
@@ -36,7 +54,8 @@ export interface ClientUsage {
   totals: UsageMetrics;
   timeline: (UsageMetrics & { time: string })[];
   models: (UsageMetrics & { model: string })[];
-  pricingAvailable: false;
+  pricingAvailable: boolean;
+  pricing: UsagePricing;
 }
 
 const invalid = (): never => {
@@ -57,12 +76,81 @@ const id = (value: unknown): string => {
   const result = text(value);
   return /^(unattributed|(?:native|plugin)_[0-9a-f]{32})$/.test(result) ? result : invalid();
 };
+const money = (value: unknown, signed = false): number | null => {
+  if (value === null || value === undefined) return null;
+  return typeof value === 'number' &&
+    Number.isFinite(value) &&
+    Math.abs(value) <= Number.MAX_SAFE_INTEGER &&
+    (signed || value >= 0)
+    ? value
+    : invalid();
+};
+const version = (value: unknown): string => {
+  const result = text(value);
+  return /^[a-f0-9]{64}$/.test(result) ? result : invalid();
+};
+const normalizePricing = (value: unknown, attempts: number): UsagePricing => {
+  const raw = record(value);
+  if (typeof raw.available !== 'boolean') invalid();
+  if (!raw.available && raw.source === undefined && raw.status === undefined) {
+    return {
+      available: false,
+      source: null,
+      currency: null,
+      status: 'unavailable',
+      snapshotVersion: null,
+      fetchedAt: null,
+      snapshotVersions: [],
+      pricedAttempts: 0,
+      unpricedAttempts: attempts,
+      savingsPricedAttempts: 0,
+      estimatedCostUsd: null,
+      estimatedCacheSavingsUsd: null,
+    };
+  }
+  if (
+    raw.source !== 'models.dev' ||
+    raw.currency !== 'USD' ||
+    !['loading', 'ready', 'stale', 'error', 'disabled'].includes(String(raw.status))
+  )
+    invalid();
+  const priced = count(raw.priced_attempts);
+  const unpriced = count(raw.unpriced_attempts);
+  const savingsPriced =
+    raw.savings_priced_attempts === undefined ? 0 : count(raw.savings_priced_attempts);
+  const cost = money(raw.estimated_cost_usd);
+  const savings = money(raw.estimated_cache_savings_usd, true);
+  const versions = list(raw.snapshot_versions, 512).map(version);
+  if (
+    priced + unpriced !== attempts ||
+    savingsPriced > priced ||
+    raw.available !== priced > 0 ||
+    (priced > 0 && (cost === null || versions.length === 0)) ||
+    (priced === 0 && (cost !== null || savings !== null)) ||
+    (savingsPriced === 0) !== (savings === null)
+  )
+    invalid();
+  return {
+    available: raw.available === true,
+    source: 'models.dev',
+    currency: 'USD',
+    status: raw.status as UsagePricing['status'],
+    snapshotVersion: raw.snapshot_version === null ? null : version(raw.snapshot_version),
+    fetchedAt: raw.fetched_at === null ? null : date(raw.fetched_at),
+    snapshotVersions: versions,
+    pricedAttempts: priced,
+    unpricedAttempts: unpriced,
+    savingsPricedAttempts: savingsPriced,
+    estimatedCostUsd: cost,
+    estimatedCacheSavingsUsd: savings,
+  };
+};
 const metrics = (value: unknown): UsageMetrics => {
   const raw = record(value);
   const rate = raw.cache_rate;
   if (rate !== null && (typeof rate !== 'number' || !Number.isFinite(rate) || rate < 0 || rate > 1))
     invalid();
-  return {
+  const result: UsageMetrics = {
     attempts: count(raw.attempts),
     succeeded: count(raw.succeeded),
     failed: count(raw.failed),
@@ -77,7 +165,21 @@ const metrics = (value: unknown): UsageMetrics => {
     cacheRate: rate as number | null,
     cacheRateDenominator: count(raw.cache_rate_denominator),
     unknownTokenEvents: count(raw.unknown_token_events),
+    pricedAttempts: raw.priced_attempts === undefined ? 0 : count(raw.priced_attempts),
+    savingsPricedAttempts:
+      raw.savings_priced_attempts === undefined ? 0 : count(raw.savings_priced_attempts),
+    estimatedCostUsd: money(raw.estimated_cost_usd),
+    estimatedCacheSavingsUsd: money(raw.estimated_cache_savings_usd, true),
   };
+  if (
+    result.pricedAttempts > result.attempts ||
+    result.savingsPricedAttempts > result.pricedAttempts ||
+    (result.pricedAttempts === 0 && result.estimatedCostUsd !== null) ||
+    (result.pricedAttempts > 0 && result.estimatedCostUsd === null) ||
+    (result.savingsPricedAttempts === 0) !== (result.estimatedCacheSavingsUsd === null)
+  )
+    invalid();
+  return result;
 };
 
 export const normalizeClientUsage = (value: unknown): ClientUsage => {
@@ -88,8 +190,20 @@ export const normalizeClientUsage = (value: unknown): ClientUsage => {
   if (state !== 'collecting' && state !== 'partial' && state !== 'disabled') invalid();
   const window = record(raw.window);
   if (window.bucket !== 'hour' && window.bucket !== 'day') invalid();
-  const pricing = record(raw.pricing);
-  if (pricing.available !== false) invalid();
+  const totals = metrics(raw.totals);
+  const pricing = normalizePricing(raw.pricing, totals.attempts);
+  // Independently accumulated floats can differ at machine precision, not at billing scale.
+  const sameMoney = (a: number | null, b: number | null): boolean =>
+    a === null || b === null
+      ? a === b
+      : Math.abs(a - b) <= Math.max(Math.abs(a), Math.abs(b), Number.MIN_VALUE) * 1e-10;
+  if (
+    pricing.pricedAttempts !== totals.pricedAttempts ||
+    pricing.savingsPricedAttempts !== totals.savingsPricedAttempts ||
+    !sameMoney(pricing.estimatedCostUsd, totals.estimatedCostUsd) ||
+    !sameMoney(pricing.estimatedCacheSavingsUsd, totals.estimatedCacheSavingsUsd)
+  )
+    invalid();
   return {
     collection: {
       state: state as ClientUsage['collection']['state'],
@@ -113,7 +227,7 @@ export const normalizeClientUsage = (value: unknown): ClientUsage => {
       };
     }),
     selectedClient: raw.selected_client === null ? null : id(raw.selected_client),
-    totals: metrics(raw.totals),
+    totals,
     timeline: list(raw.timeline, 2161).map((value) => ({
       ...metrics(value),
       time: date(record(value).time),
@@ -122,7 +236,8 @@ export const normalizeClientUsage = (value: unknown): ClientUsage => {
       ...metrics(value),
       model: text(record(value).model),
     })),
-    pricingAvailable: false,
+    pricingAvailable: pricing.available,
+    pricing,
   };
 };
 

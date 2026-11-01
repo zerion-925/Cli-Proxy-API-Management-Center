@@ -28,5 +28,22 @@
     "native_attempts": 167,
     "aggregate_attempts": 501,
     "request_url": "http://127.0.0.1:18419/v0/management/client-usage-meter?range=24h&client=native_0123456789abcdef0123456789abcdef"
+  },
+  "models_dev_pricing_fixture": {
+    "synthetic_only": true,
+    "priced_subtotal_rendered": true,
+    "partial_coverage_rendered": true,
+    "source_and_versions_rendered": true,
+    "stale_estimate_preserved": true,
+    "mobile_page_overflow": false
+  },
+  "models_dev_actual_runtime_wire": {
+    "synthetic_inference_only": true,
+    "actual_catalog_source": "https://models.dev/api.json",
+    "priced_attempts": 2,
+    "unpriced_attempts": 4,
+    "estimated_cost_usd": 4.8e-05,
+    "estimated_cache_savings_usd": 6e-06,
+    "rendered": true
   }
 }

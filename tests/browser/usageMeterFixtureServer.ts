@@ -1,5 +1,7 @@
 import { fixtureUsage } from './usageMeterFixture';
 import officialRuntime from '../fixtures/usage-meter-official-runtime.json';
+import pricedRuntime from '../fixtures/usage-meter-pricing-official-runtime.json';
+import { pricedResponse } from '../fixtures/usagePricing';
 
 let mode = 'ready';
 Bun.serve({
@@ -25,14 +27,26 @@ Bun.serve({
       return new Response('{}', { status: 404, headers });
     if (mode === 'unsupported' || mode === 'error')
       return new Response('{}', { status: mode === 'unsupported' ? 404 : 503, headers });
-    if (mode === 'official-runtime') {
+    if (['official-runtime', 'pricing', 'pricing-stale', 'pricing-runtime'].includes(mode)) {
       if (url.searchParams.get('client') || (url.searchParams.get('range') ?? '24h') !== '24h') {
         return new Response(
           '{"error":"Recorded official-runtime snapshot only supports aggregate 24h"}',
           { status: 400, headers }
         );
       }
-      return new Response(JSON.stringify(officialRuntime), { headers });
+      const data =
+        mode === 'official-runtime'
+          ? officialRuntime
+          : mode === 'pricing-runtime'
+            ? pricedRuntime
+            : {
+                ...pricedResponse,
+                pricing: {
+                  ...pricedResponse.pricing,
+                  status: mode === 'pricing-stale' ? 'stale' : 'ready',
+                },
+              };
+      return new Response(JSON.stringify(data), { headers });
     }
     const data = fixtureUsage(
       url.searchParams.get('range') ?? '24h',

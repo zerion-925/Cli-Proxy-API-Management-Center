@@ -44,7 +44,16 @@ export function Demo() {
           client, isolated mock data.
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-          {['ready', 'empty', 'unsupported', 'error', 'official-runtime'].map((value) => (
+          {[
+            'ready',
+            'empty',
+            'unsupported',
+            'error',
+            'official-runtime',
+            'pricing',
+            'pricing-stale',
+            'pricing-runtime',
+          ].map((value) => (
             <button
               className="btn btn-secondary btn-sm"
               key={value}
