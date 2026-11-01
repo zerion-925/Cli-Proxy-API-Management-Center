@@ -100,6 +100,7 @@
     "status": "Bağlantı Durumu:"
   },
   "nav": {
+    "client_usage": "İstemci kullanımı",
     "dashboard": "Pano",
     "quick_start": "Hızlı Başlangıç",
     "ai_providers": "AI Sağlayıcıları",
@@ -121,6 +122,7 @@
     "control": "Denetim"
   },
   "nav_meta": {
+    "client_usage": "Token, önbellek ve tahminler",
     "dashboard": "İşletim Özeti",
     "quick_start": "APIKEY.FUN Kurulumu",
     "ai_providers": "Yukarı Akış Model Yönlendirmesi",
@@ -2472,7 +2474,7 @@
     "cache_rate": "Önbellekten okuma oranı",
     "denominator": "Payda: {{count}} girdi belirteci. Oran = sınıflandırılmış önbellekten okunan belirteçler ÷ yeniden oluşturulan toplam girdi belirteçleri. Pay ve payda yalnızca hesabı eksiksiz ve sınıflandırması kesin olan aynı olay kümesini kapsar.",
     "requests_unavailable": "Denemeler, yeniden denemeler dahil yürütmeleri sayar; gelen istek sayısını göstermez. Sağlanan tanımlayıcılarla aynı isteğin tekrar sayılmasını güvenilir biçimde önlemek mümkün olmadığından gelen istek sayısı sunulmaz.",
-    "empty": "Seçilen istemci ve zaman aralığı için yürütme denemesi kaydedilmemiş. Toplama sırasında eksik kalan veriler ve önceki geçmiş sonradan tamamlanmaz.",
+    "empty": "Seçilen istemci ve zaman aralığı için yürütme denemesi kaydedilmemiş.",
     "timeline": "Zamana göre belirteç kullanımı",
     "utc": "Tüm saatler UTC cinsindedir",
     "timeline_a11y": "Toplam belirteçlerin, önbellekten okunan belirteçlerin ve çıktı belirteçlerinin zaman içindeki değişimi; kesin değerler kullanım ayrıntıları tablosunda bulunur.",

@@ -651,6 +651,12 @@ export function MainLayout() {
       labelKey: 'nav_groups.observe',
       items: [
         {
+          path: '/usage',
+          labelKey: 'nav.client_usage',
+          metaKey: 'nav_meta.client_usage',
+          icon: sidebarIcons.dashboard,
+        },
+        {
           path: '/quota',
           labelKey: 'nav.quota_management',
           metaKey: 'nav_meta.quota_management',

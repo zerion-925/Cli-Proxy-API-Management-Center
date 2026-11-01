@@ -95,8 +95,7 @@ export function ClientUsageView({
       <header className={styles.header}>
         <div>
           <span className={styles.eyebrow}>{t('usage_meter.eyebrow')}</span>
-          <h2 id="client-usage-title">{t('usage_meter.title')}</h2>
-          <p className={styles.note}>{t('usage_meter.description')}</p>
+          <h1 id="client-usage-title">{t('usage_meter.title')}</h1>
         </div>
         <Button
           variant="secondary"
@@ -141,18 +140,7 @@ export function ClientUsageView({
         <>
           <div className={styles.coverage}>
             <span className={styles.badge}>{t(`usage_meter.state_${data.collection.state}`)}</span>
-            <span>
-              {t('usage_meter.coverage', {
-                since: when(data.collection.startedAt),
-                days: data.collection.retentionDays,
-              })}
-            </span>
-            <span>{t('usage_meter.best_effort')}</span>
           </div>
-          <details className={styles.note}>
-            <summary>{t('usage_meter.accounting_limits')}</summary>
-            <p>{t('usage_meter.reconstructed')}</p>
-          </details>
           <dl className={styles.summary}>
             <div>
               <dt>{t('usage_meter.attempts')}</dt>
@@ -167,19 +155,15 @@ export function ClientUsageView({
             <div>
               <dt>{t('usage_meter.total_tokens')}</dt>
               <dd>{observedTokens(totals.totalTokens, totals)}</dd>
-              <small>{t('usage_meter.unknown_events', { count: totals.unknownTokenEvents })}</small>
             </div>
             <div>
               <dt>{t('usage_meter.cache_rate')}</dt>
               <dd>
                 {percent(totals.cacheRate === 0 && totals.attempts > 0 ? null : totals.cacheRate)}
               </dd>
-              <small>
-                {t('usage_meter.denominator', { count: number(totals.cacheRateDenominator) })}
-              </small>
             </div>
           </dl>
-          <p className={styles.note}>{t('usage_meter.requests_unavailable')}</p>
+
           {totals.attempts === 0 ? (
             <p className={styles.state}>{t('usage_meter.empty')}</p>
           ) : (
@@ -345,7 +329,20 @@ export function ClientUsageView({
             </>
           )}
           <UsagePricingSummary pricing={data.pricing} />
-          <footer className={styles.footer}>
+          <details className={styles.technical}>
+            <summary>{t('usage_meter.accounting_limits')}</summary>
+            <p>{t('usage_meter.description')}</p>
+            <p>
+              {t('usage_meter.coverage', {
+                since: when(data.collection.startedAt),
+                days: data.collection.retentionDays,
+              })}
+            </p>
+            <p>{t('usage_meter.best_effort')}</p>
+            <p>{t('usage_meter.reconstructed')}</p>
+            <p>{t('usage_meter.unknown_events', { count: totals.unknownTokenEvents })}</p>
+            <p>{t('usage_meter.denominator', { count: number(totals.cacheRateDenominator) })}</p>
+            <p>{t('usage_meter.requests_unavailable')}</p>
             <p>
               {t('usage_meter.earliest_event', {
                 date: data.collection.earliestEventAt
@@ -362,7 +359,7 @@ export function ClientUsageView({
               })}
             </p>
             <p>{t('usage_meter.no_backfill')}</p>
-          </footer>
+          </details>
         </>
       )}
     </section>

@@ -28,6 +28,10 @@
   }
   summary {
     cursor: pointer;
+    &:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 4px;
+    }
   }
   code {
     overflow-wrap: anywhere;
@@ -38,10 +42,7 @@
     text-decoration: underline;
   }
 }
-.status {
-  font-size: 11px;
-  color: var(--text-secondary);
-}
+
 .amounts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -100,6 +100,7 @@
     "status": "Connection Status:"
   },
   "nav": {
+    "client_usage": "Client usage",
     "dashboard": "Dashboard",
     "quick_start": "Quick Start",
     "ai_providers": "AI Providers",
@@ -121,6 +122,7 @@
     "control": "Control"
   },
   "nav_meta": {
+    "client_usage": "Tokens, cache & estimates",
     "dashboard": "Operations overview",
     "quick_start": "APIKEY.FUN setup",
     "ai_providers": "Upstream model routing",
@@ -2472,7 +2474,7 @@
     "cache_rate": "Cache read rate",
     "denominator": "Denominator: {{count}} input tokens. Rate = classified cache-read tokens ÷ reconstructed total input tokens, using the same subset of events with complete, classified accounting.",
     "requests_unavailable": "Attempts count executions, including retries; they are not inbound requests. An inbound request count is unavailable because the supplied identifiers cannot reliably deduplicate requests.",
-    "empty": "No execution attempts recorded for this client and time range. Collection gaps and earlier history are not backfilled.",
+    "empty": "No execution attempts recorded for this client and time range.",
     "timeline": "Token usage over time",
     "utc": "All times in UTC",
     "timeline_a11y": "Timeline of total tokens, cache-read tokens, and output tokens; exact values are available in the usage breakdown table.",

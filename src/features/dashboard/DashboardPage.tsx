@@ -16,7 +16,6 @@ import { useDashboardOverview } from './hooks/useDashboardOverview';
 import { LiveWire } from './components/LiveWire';
 import { Meter } from './components/Meter';
 import { Sparkline } from './components/Sparkline';
-import { ClientUsageMeter } from './components/ClientUsageMeter';
 import { ThroughputChart } from './components/ThroughputChart';
 import { useCountUp, useRevealGroup, useRevealOnScroll } from '@/hooks/motion';
 import { providerLabel, splitWindowMinutes, toneForSuccessRate, type MeterTone } from './utils';
@@ -310,8 +309,6 @@ export function DashboardPage() {
           />
         </div>
       </section>
-
-      <ClientUsageMeter />
 
       {/* ---------- KPI ---------- */}
       <section className={styles.statsRow} ref={statsRef} aria-label={t('dashboard.stats_aria')}>

@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
-  h2 {
+  h1 {
     margin: 8px 0;
     font-size: 28px;
     letter-spacing: -0.025em;
@@ -180,13 +180,22 @@
     font-weight: 500;
   }
 }
-.footer {
+.technical {
   margin-top: 20px;
   font-size: 11px;
   color: var(--text-secondary);
   line-height: 1.6;
   p {
     margin: 6px 0;
+    max-width: 75ch;
+  }
+  summary {
+    cursor: pointer;
+    font-size: 12px;
+    &:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 4px;
+    }
   }
 }
 .state {

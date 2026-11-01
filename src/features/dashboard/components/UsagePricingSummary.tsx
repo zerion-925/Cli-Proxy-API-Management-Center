@@ -14,7 +14,6 @@ export function UsagePricingSummary({ pricing }: { pricing: UsagePricing }) {
     <section className={styles.pricing} aria-label={t('usage_meter.pricing_a11y')}>
       <header>
         <h3>{t('usage_meter.pricing_title')}</h3>
-        <span className={styles.status}>{t(`usage_meter.pricing_status_${pricing.status}`)}</span>
       </header>
       <dl className={styles.amounts}>
         <div>
@@ -33,39 +32,44 @@ export function UsagePricingSummary({ pricing }: { pricing: UsagePricing }) {
           unpriced: pricing.unpricedAttempts,
         })}
       </p>
-      <p>{t('usage_meter.pricing_savings_coverage', { count: pricing.savingsPricedAttempts })}</p>
-      <p>{t('usage_meter.pricing_not_bill')}</p>
-      {pricing.source === 'models.dev' && (
-        <details>
-          <summary>{t('usage_meter.pricing_provenance')}</summary>
-          <p>
-            <a href="https://models.dev" target="_blank" rel="noopener noreferrer">
-              models.dev
-            </a>
-            {' · '}
-            {t('usage_meter.pricing_units')}
-          </p>
-          <p>{t('usage_meter.pricing_fetched', { date: fetchedAt })}</p>
-          <p>
-            {t('usage_meter.pricing_snapshot', {
-              version: pricing.snapshotVersion?.slice(0, 12) ?? t('usage_meter.unavailable'),
-            })}
-          </p>
-          <p>
-            {t('usage_meter.pricing_applied_versions', { count: pricing.snapshotVersions.length })}
-          </p>
-          {pricing.snapshotVersions.length > 0 && (
-            <ul>
-              {pricing.snapshotVersions.map((version) => (
-                <li key={version}>
-                  <code>{version}</code>
-                </li>
-              ))}
-            </ul>
-          )}
-          <p>{t('usage_meter.pricing_history')}</p>
-        </details>
-      )}
+      <details>
+        <summary>{t('usage_meter.pricing_provenance')}</summary>
+        <p>{t(`usage_meter.pricing_status_${pricing.status}`)}</p>
+        <p>{t('usage_meter.pricing_savings_coverage', { count: pricing.savingsPricedAttempts })}</p>
+        <p>{t('usage_meter.pricing_not_bill')}</p>
+        {pricing.source === 'models.dev' && (
+          <>
+            <p>
+              <a href="https://models.dev" target="_blank" rel="noopener noreferrer">
+                models.dev
+              </a>
+              {' · '}
+              {t('usage_meter.pricing_units')}
+            </p>
+            <p>{t('usage_meter.pricing_fetched', { date: fetchedAt })}</p>
+            <p>
+              {t('usage_meter.pricing_snapshot', {
+                version: pricing.snapshotVersion?.slice(0, 12) ?? t('usage_meter.unavailable'),
+              })}
+            </p>
+            <p>
+              {t('usage_meter.pricing_applied_versions', {
+                count: pricing.snapshotVersions.length,
+              })}
+            </p>
+            {pricing.snapshotVersions.length > 0 && (
+              <ul>
+                {pricing.snapshotVersions.map((version) => (
+                  <li key={version}>
+                    <code>{version}</code>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p>{t('usage_meter.pricing_history')}</p>
+          </>
+        )}
+      </details>
     </section>
   );
 }

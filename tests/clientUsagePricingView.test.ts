@@ -50,6 +50,33 @@ describe('models.dev estimate presentation', () => {
     expect(html).toContain('usage_meter.pricing_not_bill');
     expect(html).toContain('usage_meter.pricing_history');
   });
+  test('keeps price caveats and current or failed source status inside closed details', () => {
+    for (const raw of [
+      pricedResponse,
+      {
+        ...pricedResponse,
+        pricing: { ...pricedResponse.pricing, status: 'error' },
+      },
+    ]) {
+      const html = render(raw);
+      const disclosure = html.match(/<details\b[^>]*>[\s\S]*?<\/details>/)?.[0];
+      const visible = html.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g, '');
+      expect(disclosure).toBeDefined();
+      expect(disclosure).not.toMatch(/<details[^>]*\bopen(?:[\s=>])/);
+      for (const key of [
+        'pricing_not_bill',
+        'pricing_savings_coverage',
+        `pricing_status_${raw.pricing.status}`,
+      ]) {
+        expect(disclosure).toContain(`usage_meter.${key}`);
+        expect(visible).not.toContain(`usage_meter.${key}`);
+      }
+      expect(visible).toContain('usage_meter.pricing_subtotal');
+      expect(visible).toContain('usage_meter.pricing_savings');
+      expect(visible).toContain('usage_meter.pricing_coverage');
+      expect(visible).toContain('USD');
+    }
+  });
   test('stale data is visibly stale, not silently current', () => {
     const html = render({
       ...pricedResponse,

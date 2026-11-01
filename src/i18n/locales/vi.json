@@ -100,6 +100,7 @@
     "status": "Trạng thái kết nối:"
   },
   "nav": {
+    "client_usage": "Mức sử dụng máy khách",
     "dashboard": "Bảng điều khiển",
     "quick_start": "Bắt đầu nhanh",
     "ai_providers": "AI Provider",
@@ -121,6 +122,7 @@
     "control": "Điều khiển"
   },
   "nav_meta": {
+    "client_usage": "Token, bộ nhớ đệm và ước tính",
     "dashboard": "Tổng quan vận hành",
     "quick_start": "Thiết lập APIKEY.FUN",
     "ai_providers": "Định tuyến model upstream",
@@ -2478,7 +2480,7 @@
     "cache_rate": "Tỷ lệ đọc từ bộ nhớ đệm",
     "denominator": "Mẫu số: {{count}} token đầu vào. Tỷ lệ = token đọc từ bộ nhớ đệm đã được phân loại ÷ tổng token đầu vào được tái dựng. Tử số và mẫu số chỉ tính cùng một nhóm sự kiện có thống kê đầy đủ và phân loại rõ ràng.",
     "requests_unavailable": "Số lần thực thi bao gồm cả các lần thử lại, không phải số yêu cầu gửi đến. Chưa thể cung cấp số yêu cầu gửi đến vì các mã định danh hiện có không đủ để loại trừ yêu cầu bị tính trùng một cách đáng tin cậy.",
-    "empty": "Chưa ghi nhận lần thực thi nào cho máy khách và khoảng thời gian đã chọn. Dữ liệu bị thiếu khi thu thập và lịch sử trước đó sẽ không được bổ sung.",
+    "empty": "Chưa ghi nhận lần thực thi nào cho máy khách và khoảng thời gian đã chọn.",
     "timeline": "Lượng token theo thời gian",
     "utc": "Tất cả thời gian đều theo UTC",
     "timeline_a11y": "Biểu đồ theo thời gian của tổng số token, token đọc từ bộ nhớ đệm và token đầu ra; xem giá trị chính xác trong bảng thống kê chi tiết.",

@@ -35,6 +35,40 @@ describe('client meter presentation', () => {
     expect(html).not.toContain('Do not trust key labels');
     expect(html).toContain('usage_meter.timeline_a11y');
   });
+  test('keeps useful stats visible and technical caveats in one closed disclosure', () => {
+    const html = render();
+    const details = html.match(/<details\b[^>]*>[\s\S]*?<\/details>/g) ?? [];
+    expect(details).toHaveLength(2);
+    for (const detail of details) expect(detail).not.toMatch(/<details[^>]*\bopen(?:[\s=>])/);
+    expect(details.find((detail) => detail.includes('usage_meter.pricing_provenance'))).toContain(
+      'usage_meter.pricing_status_unavailable'
+    );
+    const visible = html.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g, '');
+    const technical = details.find((detail) => detail.includes('usage_meter.accounting_limits'));
+    expect(technical).toBeDefined();
+    expect(technical).not.toMatch(/<details[^>]*\bopen(?:[\s=>])/);
+    for (const key of [
+      'description',
+      'best_effort',
+      'coverage',
+      'reconstructed',
+      'unknown_events',
+      'denominator',
+      'requests_unavailable',
+      'earliest_event',
+      'health',
+      'no_backfill',
+    ]) {
+      expect(technical).toContain(`usage_meter.${key}`);
+      expect(visible).not.toContain(`usage_meter.${key}`);
+    }
+    expect(visible.match(/usage_meter.state_partial/g)).toHaveLength(1);
+    expect(visible).toContain('<dd>3</dd>');
+    expect(visible).toContain('<dd>170</dd>');
+    expect(visible).toContain('<dd>40%</dd>');
+    expect(visible).toContain('usage_meter.outcomes');
+    expect(visible).toContain('usage_meter.breakdown');
+  });
   test('unsupported and error states do not display invented metrics', () => {
     expect(render({ data: null, status: 'unsupported' })).toContain('usage_meter.unsupported');
     expect(render({ data: null, status: 'error' })).toContain('usage_meter.error');
