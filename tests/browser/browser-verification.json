@@ -1,0 +1,32 @@
+{
+  "fixture_only": true,
+  "checks": [
+    {
+      "state": "error",
+      "passed": true
+    },
+    {
+      "state": "unsupported",
+      "passed": true
+    },
+    {
+      "state": "empty",
+      "passed": true
+    },
+    {
+      "state": "ready",
+      "passed": true
+    },
+    {
+      "state": "logout",
+      "data_cleared": true
+    }
+  ],
+  "mobile_no_horizontal_overflow": true,
+  "strict_opaque_identity_filter": {
+    "passed": true,
+    "native_attempts": 167,
+    "aggregate_attempts": 501,
+    "request_url": "http://127.0.0.1:18419/v0/management/client-usage-meter?range=24h&client=native_0123456789abcdef0123456789abcdef"
+  }
+}

@@ -1,0 +1,248 @@
+.section {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  color: var(--text-primary);
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  h2 {
+    margin: 8px 0;
+    font-size: 28px;
+    letter-spacing: -0.025em;
+  }
+}
+.eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-tertiary);
+}
+.note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 6px 0;
+  max-width: 75ch;
+}
+.controls {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 24px 0 16px;
+}
+.clientSelect {
+  width: min(100%, 320px);
+}
+.ranges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.coverage {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.badge {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 28px 0 12px;
+  padding: 24px 0;
+  border-block: 1px solid var(--border-color);
+  dt {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  dd {
+    margin: 8px 0;
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  small {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    display: block;
+  }
+}
+.figure {
+  margin: 28px 0;
+  figcaption {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    overflow: visible;
+  }
+  text {
+    fill: var(--text-secondary);
+    font-size: 10px;
+  }
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  i {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+}
+.tokens {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 28px 0 36px;
+  dt {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  dd {
+    font-size: 20px;
+    margin: 8px 0 0;
+    font-variant-numeric: tabular-nums;
+  }
+}
+.tableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  h3 {
+    margin: 0;
+    font-size: 16px;
+  }
+}
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 16px;
+  border-block: 1px solid var(--border-color);
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 4px;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  th,
+  td {
+    padding: 14px 12px;
+    text-align: right;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-color);
+  }
+  th:first-child {
+    text-align: left;
+    max-width: 240px;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    min-width: 130px;
+  }
+  thead th {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  tbody th {
+    font-weight: 500;
+  }
+}
+.footer {
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  p {
+    margin: 6px 0;
+  }
+}
+.state {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  padding: 28px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 600px) {
+  .summary {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .summary > div {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    align-items: center;
+    dd {
+      font-size: 26px;
+      grid-column: 2;
+      grid-row: 1 / 3;
+      margin: 0;
+    }
+  }
+  .controls {
+    flex-direction: column;
+  }
+  .clientSelect {
+    width: 100%;
+  }
+  .tokens {
+    gap: 20px 28px;
+    justify-content: flex-start;
+  }
+  .tokens > div {
+    flex-basis: calc(50% - 14px);
+  }
+  .figure svg {
+    min-height: 145px;
+  }
+  .figure text {
+    font-size: 20px;
+  }
+}
