@@ -27,27 +27,11 @@ const render = (props = {}) =>
     )
   );
 describe('client meter presentation', () => {
-  test('shows explicit execution semantics and opaque clients without raw server labels', () => {
+  test('removes technical content entirely while preserving metrics', () => {
     const html = render();
-    expect(html).toContain('usage_meter.attempts');
-    expect(html).toContain('usage_meter.requests_unavailable');
-    expect(html).toContain('usage_meter.reconstructed');
-    expect(html).not.toContain('Do not trust key labels');
-    expect(html).toContain('usage_meter.timeline_a11y');
-  });
-  test('keeps useful stats visible and technical caveats in one closed disclosure', () => {
-    const html = render();
-    const details = html.match(/<details\b[^>]*>[\s\S]*?<\/details>/g) ?? [];
-    expect(details).toHaveLength(2);
-    for (const detail of details) expect(detail).not.toMatch(/<details[^>]*\bopen(?:[\s=>])/);
-    expect(details.find((detail) => detail.includes('usage_meter.pricing_provenance'))).toContain(
-      'usage_meter.pricing_status_unavailable'
-    );
-    const visible = html.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g, '');
-    const technical = details.find((detail) => detail.includes('usage_meter.accounting_limits'));
-    expect(technical).toBeDefined();
-    expect(technical).not.toMatch(/<details[^>]*\bopen(?:[\s=>])/);
+    expect(html).not.toContain('<details');
     for (const key of [
+      'accounting_limits',
       'description',
       'best_effort',
       'coverage',
@@ -58,16 +42,29 @@ describe('client meter presentation', () => {
       'earliest_event',
       'health',
       'no_backfill',
+      'state_partial',
+      'state_collecting',
     ]) {
-      expect(technical).toContain(`usage_meter.${key}`);
-      expect(visible).not.toContain(`usage_meter.${key}`);
+      expect(html).not.toContain(`usage_meter.${key}`);
     }
-    expect(visible.match(/usage_meter.state_partial/g)).toHaveLength(1);
-    expect(visible).toContain('<dd>3</dd>');
-    expect(visible).toContain('<dd>170</dd>');
-    expect(visible).toContain('<dd>40%</dd>');
-    expect(visible).toContain('usage_meter.outcomes');
-    expect(visible).toContain('usage_meter.breakdown');
+    expect(html).toContain('<dd>3</dd>');
+    expect(html).toContain('<dd>170</dd>');
+    expect(html).toContain('usage_meter.timeline_a11y');
+    expect(html).toContain('usage_meter.breakdown');
+  });
+  test('ordinary partial coverage is not a fault but disabled and lost collection remain visible', () => {
+    for (const state of ['collecting', 'partial', 'disabled'] as const) {
+      const data = normalizeClientUsage(response);
+      data.collection = { ...data.collection, state, ingestionFailures: 0, droppedEvents: 0 };
+      const html = render({ data });
+      expect(html).not.toContain('usage_meter.state_partial');
+      expect(html.includes('usage_meter.state_disabled')).toBe(state === 'disabled');
+    }
+    for (const field of ['ingestionFailures', 'droppedEvents'] as const) {
+      const data = normalizeClientUsage(response);
+      data.collection[field] = 1;
+      expect(render({ data })).toContain('usage_meter.collection_issue');
+    }
   });
   test('unsupported and error states do not display invented metrics', () => {
     expect(render({ data: null, status: 'unsupported' })).toContain('usage_meter.unsupported');

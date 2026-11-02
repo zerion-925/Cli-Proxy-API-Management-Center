@@ -2421,7 +2421,7 @@
   "usage_meter": {
     "pricing_a11y": "가격 추정, 적용 범위 및 카탈로그 출처",
     "pricing_title": "비용 추정",
-    "pricing_subtotal": "가격이 적용된 부분의 추정 소계",
+    "pricing_subtotal": "예상 비용",
     "pricing_savings": "캐시 읽기 추정 절감액",
     "pricing_coverage": "실행 {{total}}건 중 {{priced}}건에 가격 적용, {{unpriced}}건은 확인 불가.",
     "pricing_savings_coverage": "캐시 읽기 절감액 적용 범위: 실행 {{count}}건.",
@@ -2439,6 +2439,8 @@
     "pricing_status_disabled": "가격 수집 비활성화",
     "pricing_status_unavailable": "플러그인 가격 미설정",
     "pricing_priced_attempts": "가격 적용 실행",
+    "collection_issue": "수집 오류",
+    "pricing_coverage_a11y": "예상 비용에 전체 {{total}}회 중 {{priced}}회 시도 포함",
     "accounting_limits": "집계 방식 및 제한",
     "uncached_input": "캐시되지 않은 입력",
     "earliest_event": "보관된 최초 관측: {{date}} UTC",

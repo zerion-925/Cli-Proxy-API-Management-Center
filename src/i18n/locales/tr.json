@@ -2421,7 +2421,7 @@
   "usage_meter": {
     "pricing_a11y": "Fiyat tahminleri, kapsam ve katalog kaynağı",
     "pricing_title": "Maliyet tahminleri",
-    "pricing_subtotal": "Fiyatlandırılan kısmın tahmini ara toplamı",
+    "pricing_subtotal": "Tahmini maliyet",
     "pricing_savings": "Tahmini önbellek okuma tasarrufu",
     "pricing_coverage": "{{total}} denemenin {{priced}} tanesi fiyatlandırıldı; {{unpriced}} tanesi kullanılamıyor.",
     "pricing_savings_coverage": "Önbellek okuma tasarrufu kapsamı: {{count}} deneme.",
@@ -2439,6 +2439,8 @@
     "pricing_status_disabled": "Fiyat toplama devre dışı",
     "pricing_status_unavailable": "Eklenti fiyatlandırması yapılandırılmamış",
     "pricing_priced_attempts": "Fiyatlandırılmış denemeler",
+    "collection_issue": "Veri toplama sorunları",
+    "pricing_coverage_a11y": "Tahmini maliyete {{total}} denemenin {{priced}} tanesi dahil",
     "accounting_limits": "Hesaplama yöntemi ve sınırlar",
     "uncached_input": "Önbelleksiz girdi",
     "earliest_event": "Saklanan en eski gözlem: {{date}} UTC",

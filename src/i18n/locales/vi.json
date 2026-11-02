@@ -2427,7 +2427,7 @@
   "usage_meter": {
     "pricing_a11y": "Ước tính giá, phạm vi và nguồn danh mục",
     "pricing_title": "Ước tính chi phí",
-    "pricing_subtotal": "Tổng phụ ước tính cho phần đã định giá",
+    "pricing_subtotal": "Chi phí ước tính",
     "pricing_savings": "Ước tính tiết kiệm khi đọc bộ nhớ đệm",
     "pricing_coverage": "Đã định giá {{priced}}/{{total}} lượt thực thi; {{unpriced}} lượt chưa có giá.",
     "pricing_savings_coverage": "Phạm vi tính tiết kiệm bộ nhớ đệm: {{count}} lượt thực thi.",
@@ -2445,6 +2445,8 @@
     "pricing_status_disabled": "Đã tắt thu thập giá",
     "pricing_status_unavailable": "Plugin chưa cấu hình giá",
     "pricing_priced_attempts": "Lượt thực thi đã định giá",
+    "collection_issue": "Sự cố thu thập",
+    "pricing_coverage_a11y": "Chi phí ước tính bao gồm {{priced}} trên {{total}} lượt thử",
     "accounting_limits": "Phương pháp tính và giới hạn",
     "uncached_input": "Đầu vào không được lưu đệm",
     "earliest_event": "Lần quan sát sớm nhất còn lưu: {{date}} UTC",

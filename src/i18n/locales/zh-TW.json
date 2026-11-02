@@ -2448,7 +2448,7 @@
   "usage_meter": {
     "pricing_a11y": "價格估算、涵蓋範圍與目錄來源",
     "pricing_title": "費用估算",
-    "pricing_subtotal": "已定價部分的估算小計",
+    "pricing_subtotal": "估算費用",
     "pricing_savings": "快取讀取的估算節省",
     "pricing_coverage": "{{total}} 次執行中 {{priced}} 次已定價，{{unpriced}} 次無法取得。",
     "pricing_savings_coverage": "快取讀取節省涵蓋 {{count}} 次執行。",
@@ -2466,6 +2466,8 @@
     "pricing_status_disabled": "價格收集已停用",
     "pricing_status_unavailable": "外掛程式尚未設定價格",
     "pricing_priced_attempts": "已定價執行次數",
+    "collection_issue": "收集發生異常",
+    "pricing_coverage_a11y": "估算費用包含 {{total}} 次嘗試中的 {{priced}} 次",
     "accounting_limits": "計量方式與限制",
     "uncached_input": "未快取輸入",
     "earliest_event": "最早保留的觀測：{{date}} UTC",

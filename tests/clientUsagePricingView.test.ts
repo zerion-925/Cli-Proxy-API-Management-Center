@@ -40,49 +40,37 @@ describe('models.dev estimate presentation', () => {
       'usage_meter.pricing_priced_attempts'
     );
   });
-  test('labels priced subtotal, coverage, real source and snapshot provenance', () => {
+  test('shows compact partial coverage beside cost without any disclosure content', () => {
     const html = render();
-    expect(html).toContain('https://models.dev');
     expect(html).toContain('usage_meter.pricing_subtotal');
-    expect(html).toContain('usage_meter.pricing_coverage');
+    expect(html).toContain('(2/3)');
+    expect(html).toContain('usage_meter.pricing_coverage_a11y');
     expect(html).toContain('USD');
-    expect(html).toContain('aaaaaaaaaaaa');
-    expect(html).toContain('usage_meter.pricing_not_bill');
-    expect(html).toContain('usage_meter.pricing_history');
-  });
-  test('keeps price caveats and current or failed source status inside closed details', () => {
-    for (const raw of [
-      pricedResponse,
-      {
-        ...pricedResponse,
-        pricing: { ...pricedResponse.pricing, status: 'error' },
-      },
+    expect(html).not.toContain('<details');
+    expect(html).not.toContain('<p>');
+    for (const text of [
+      'models.dev',
+      'aaaaaaaa',
+      'pricing_provenance',
+      'pricing_not_bill',
+      'pricing_history',
+      'pricing_units',
+      'pricing_fetched',
+      'pricing_snapshot',
+      'pricing_applied_versions',
+      'pricing_status',
+      'pricing_savings_coverage',
     ]) {
-      const html = render(raw);
-      const disclosure = html.match(/<details\b[^>]*>[\s\S]*?<\/details>/)?.[0];
-      const visible = html.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g, '');
-      expect(disclosure).toBeDefined();
-      expect(disclosure).not.toMatch(/<details[^>]*\bopen(?:[\s=>])/);
-      for (const key of [
-        'pricing_not_bill',
-        'pricing_savings_coverage',
-        `pricing_status_${raw.pricing.status}`,
-      ]) {
-        expect(disclosure).toContain(`usage_meter.${key}`);
-        expect(visible).not.toContain(`usage_meter.${key}`);
-      }
-      expect(visible).toContain('usage_meter.pricing_subtotal');
-      expect(visible).toContain('usage_meter.pricing_savings');
-      expect(visible).toContain('usage_meter.pricing_coverage');
-      expect(visible).toContain('USD');
+      expect(html).not.toContain(text);
     }
   });
-  test('stale data is visibly stale, not silently current', () => {
-    const html = render({
-      ...pricedResponse,
-      pricing: { ...pricedResponse.pricing, status: 'stale' },
-    });
-    expect(html).toContain('usage_meter.pricing_status_stale');
+  test('fully priced costs do not add coverage', () => {
+    const raw = structuredClone(pricedResponse);
+    raw.pricing.unpriced_attempts = 0;
+    raw.pricing.priced_attempts = 3;
+    raw.totals.priced_attempts = 3;
+    expect(render(raw)).not.toContain('(3/3)');
+    expect(render(raw)).not.toContain('pricing_coverage_a11y');
   });
   test('no priced records remain unavailable rather than a free bill', () => {
     const html = render({

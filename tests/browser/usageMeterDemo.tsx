@@ -1,6 +1,8 @@
 // Test-only harness. Uses the real meter, apiClient, theme and locale code.
 import { createRoot } from 'react-dom/client';
 import { useState } from 'react';
+import { HashRouter } from 'react-router-dom';
+import { MainLayout } from '@/components/layout/MainLayout';
 import '@/styles/global.scss';
 import i18n from '@/i18n';
 import { apiClient } from '@/services/api/client';
@@ -87,4 +89,12 @@ export function Demo() {
     </main>
   );
 }
-createRoot(document.getElementById('root')!).render(<Demo />);
+createRoot(document.getElementById('root')!).render(
+  new URLSearchParams(location.search).has('shell') ? (
+    <HashRouter>
+      <MainLayout />
+    </HashRouter>
+  ) : (
+    <Demo />
+  )
+);

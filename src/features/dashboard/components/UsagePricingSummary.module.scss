@@ -13,34 +13,6 @@
     font-size: 16px;
     font-weight: 600;
   }
-  p,
-  details {
-    color: var(--text-secondary);
-    font-size: 12px;
-    line-height: 1.6;
-    max-width: 75ch;
-  }
-  p {
-    margin: 8px 0;
-  }
-  details {
-    margin-top: 12px;
-  }
-  summary {
-    cursor: pointer;
-    &:focus-visible {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 4px;
-    }
-  }
-  code {
-    overflow-wrap: anywhere;
-    font-size: 11px;
-  }
-  a {
-    color: var(--text-primary);
-    text-decoration: underline;
-  }
 }
 
 .amounts {

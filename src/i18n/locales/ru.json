@@ -2415,7 +2415,7 @@
   "usage_meter": {
     "pricing_a11y": "Оценка стоимости, покрытие и источник каталога",
     "pricing_title": "Оценка стоимости",
-    "pricing_subtotal": "Оценочная сумма учтённой части",
+    "pricing_subtotal": "Оценка стоимости",
     "pricing_savings": "Оценочная экономия на чтении кэша",
     "pricing_coverage": "Оценено {{priced}} из {{total}} попыток; недоступно: {{unpriced}}.",
     "pricing_savings_coverage": "Покрытие экономии на кэше: {{count}} попыток.",
@@ -2433,6 +2433,8 @@
     "pricing_status_disabled": "Сбор цен отключён",
     "pricing_status_unavailable": "Цены плагина не настроены",
     "pricing_priced_attempts": "Оценённые попытки",
+    "collection_issue": "Ошибки сбора данных",
+    "pricing_coverage_a11y": "В оценку стоимости включено {{priced}} из {{total}} попыток",
     "accounting_limits": "Метод учёта и ограничения",
     "uncached_input": "Некэшированный ввод",
     "earliest_event": "Самое раннее сохранённое наблюдение: {{date}} UTC",

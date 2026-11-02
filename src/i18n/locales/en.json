@@ -2421,7 +2421,7 @@
   "usage_meter": {
     "pricing_a11y": "Price estimates, coverage and catalog provenance",
     "pricing_title": "Cost estimates",
-    "pricing_subtotal": "Estimated priced subtotal",
+    "pricing_subtotal": "Estimated cost",
     "pricing_savings": "Estimated cache-read savings",
     "pricing_coverage": "{{priced}} of {{total}} attempts priced; {{unpriced}} unavailable.",
     "pricing_savings_coverage": "Cache-read savings coverage: {{count}} attempts.",
@@ -2439,6 +2439,8 @@
     "pricing_status_disabled": "Price collection disabled",
     "pricing_status_unavailable": "Plugin pricing not configured",
     "pricing_priced_attempts": "Priced attempts",
+    "collection_issue": "Collection issues",
+    "pricing_coverage_a11y": "{{priced}} of {{total}} attempts included in estimated cost",
     "accounting_limits": "Accounting method and limits",
     "uncached_input": "Uncached input",
     "earliest_event": "Earliest retained observation: {{date}} UTC",

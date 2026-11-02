@@ -2420,7 +2420,7 @@
   "usage_meter": {
     "pricing_a11y": "价格估算、覆盖范围与目录来源",
     "pricing_title": "费用估算",
-    "pricing_subtotal": "已定价部分的估算小计",
+    "pricing_subtotal": "估算费用",
     "pricing_savings": "缓存读取的估算节省",
     "pricing_coverage": "{{total}} 次执行中 {{priced}} 次已定价，{{unpriced}} 次不可用。",
     "pricing_savings_coverage": "缓存读取节省覆盖 {{count}} 次执行。",
@@ -2438,6 +2438,8 @@
     "pricing_status_disabled": "价格采集已禁用",
     "pricing_status_unavailable": "插件尚未配置价格",
     "pricing_priced_attempts": "已定价执行次数",
+    "collection_issue": "采集出现异常",
+    "pricing_coverage_a11y": "估算费用包含 {{total}} 次尝试中的 {{priced}} 次",
     "accounting_limits": "计量方式与限制",
     "uncached_input": "未缓存输入",
     "earliest_event": "最早保留的观测：{{date}} UTC",

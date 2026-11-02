@@ -21,6 +21,6 @@ The actual response includes contextual price tiers under `cost.tiers`, and lega
 - Preserve the snapshot used at ingestion. New source observations cannot establish what historical prices were before collection, and must not silently rewrite earlier estimates.
 - Use the proxy SDK's disjoint reconstructed token breakdown, not raw input + cache + reasoning sums. The native ABI loses original field-presence/quality/cache-TTL information; uncertain usage remains unpriced or explicitly incomplete.
 - Cache savings require actual comparable input/read rates and classified cache-read tokens. Cache-write pricing cannot assume an unknown TTL.
-- Refresh failures must not destroy good cached data or block inference. Source status, snapshot identity/date, priced/unpriced coverage and unavailable costs must be visible.
+- Refresh failures must not destroy good cached data or block inference. Source status and snapshot identity/date remain in the API and documentation; the meter shows compact partial coverage and unavailable costs.
 
-The models.dev catalog is public community-maintained reference data. Its published list prices do not capture private discounts, subscription bills, every service tier or every modality charge. Those limitations must remain visible in the meter.
+The models.dev catalog is public community-maintained reference data. Its published list prices do not capture private discounts, subscription bills, every service tier or every modality charge. Those limitations are documented here; the meter keeps estimate labels, compact partial cost coverage and unavailable values without technical disclosures.

@@ -52,12 +52,6 @@
   color: var(--text-secondary);
   font-size: 12px;
 }
-.badge {
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 4px 8px;
-}
 .summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -178,24 +172,6 @@
   }
   tbody th {
     font-weight: 500;
-  }
-}
-.technical {
-  margin-top: 20px;
-  font-size: 11px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  p {
-    margin: 6px 0;
-    max-width: 75ch;
-  }
-  summary {
-    cursor: pointer;
-    font-size: 12px;
-    &:focus-visible {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 4px;
-    }
   }
 }
 .state {

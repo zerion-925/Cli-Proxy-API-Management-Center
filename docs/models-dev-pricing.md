@@ -25,9 +25,11 @@ Custom gateways and aliases need explicit `pricing_provider_map` and `pricing_mo
 - One normalized current catalog is cached. Referenced historical version metadata and immutable event amounts remain; full historical catalog bodies are not archived.
 - Subscription/OAuth estimates are API-equivalent list-price comparisons, not subscription charges. Original field presence/quality lost by the seven-counter plugin ABI cannot be recovered by pricing.
 
-## Dashboard
+## Usage page
 
-**Cost estimates** displays the priced subtotal, estimated cache-read savings, priced/unpriced execution coverage, and catalog status. Provider/model misses or unavailable accounting never appear as a fake free bill. The source disclosure distinguishes the current cached catalog's fetch date/hash from the saved versions actually used for the selected history.
+The dedicated Observe → Client usage page displays estimated cost and cache-read savings. Partial priced coverage appears only beside the cost label, for example **Estimated cost (6/9)**, with a localized accessible description. Fully priced totals omit the fraction. Provider/model misses or unavailable accounting never appear as a fake free bill.
+
+Collection/accounting explanations and pricing source, status, date, hash and historical-version disclosures are documentation-only, not rendered content or expandable disclosures. Backend provenance and normalization remain unchanged. Ordinary partial selected-window coverage is not a collection fault and has no persistent badge. Disabled collection and actual ingestion failures/dropped events retain concise status messages.
 
 Model/hour/day tables show priced-attempt coverage alongside estimated subtotals. USD amounts retain small positive values rather than rounding them to zero. All seven locales include the new labels and accessible descriptions.
 

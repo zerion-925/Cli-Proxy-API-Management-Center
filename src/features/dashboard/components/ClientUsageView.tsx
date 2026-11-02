@@ -97,15 +97,6 @@ export function ClientUsageView({
           <span className={styles.eyebrow}>{t('usage_meter.eyebrow')}</span>
           <h1 id="client-usage-title">{t('usage_meter.title')}</h1>
         </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={onRefresh}
-          loading={status === 'loading'}
-          disabled={status === 'disconnected'}
-        >
-          {t('usage_meter.refresh')}
-        </Button>
       </header>
       <div className={styles.controls}>
         <div className={styles.clientSelect}>
@@ -130,6 +121,15 @@ export function ClientUsageView({
             </Button>
           ))}
         </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onRefresh}
+          loading={status === 'loading'}
+          disabled={status === 'disconnected'}
+        >
+          {t('usage_meter.refresh')}
+        </Button>
       </div>
       {status !== 'ready' && (
         <p className={styles.state} role={status === 'error' ? 'alert' : 'status'}>
@@ -138,9 +138,17 @@ export function ClientUsageView({
       )}
       {data && status === 'ready' && totals && (
         <>
-          <div className={styles.coverage}>
-            <span className={styles.badge}>{t(`usage_meter.state_${data.collection.state}`)}</span>
-          </div>
+          {(data.collection.state === 'disabled' ||
+            data.collection.ingestionFailures > 0 ||
+            data.collection.droppedEvents > 0) && (
+            <p className={styles.coverage} role="status">
+              {t(
+                data.collection.state === 'disabled'
+                  ? 'usage_meter.state_disabled'
+                  : 'usage_meter.collection_issue'
+              )}
+            </p>
+          )}
           <dl className={styles.summary}>
             <div>
               <dt>{t('usage_meter.attempts')}</dt>
@@ -329,37 +337,6 @@ export function ClientUsageView({
             </>
           )}
           <UsagePricingSummary pricing={data.pricing} />
-          <details className={styles.technical}>
-            <summary>{t('usage_meter.accounting_limits')}</summary>
-            <p>{t('usage_meter.description')}</p>
-            <p>
-              {t('usage_meter.coverage', {
-                since: when(data.collection.startedAt),
-                days: data.collection.retentionDays,
-              })}
-            </p>
-            <p>{t('usage_meter.best_effort')}</p>
-            <p>{t('usage_meter.reconstructed')}</p>
-            <p>{t('usage_meter.unknown_events', { count: totals.unknownTokenEvents })}</p>
-            <p>{t('usage_meter.denominator', { count: number(totals.cacheRateDenominator) })}</p>
-            <p>{t('usage_meter.requests_unavailable')}</p>
-            <p>
-              {t('usage_meter.earliest_event', {
-                date: data.collection.earliestEventAt
-                  ? when(data.collection.earliestEventAt)
-                  : t('usage_meter.unavailable'),
-              })}
-            </p>
-            <p>
-              {t('usage_meter.health', {
-                failures: data.collection.ingestionFailures,
-                dropped: data.collection.droppedEvents,
-                duplicates: data.collection.duplicates,
-                missing: data.collection.missingExecutionIds,
-              })}
-            </p>
-            <p>{t('usage_meter.no_backfill')}</p>
-          </details>
         </>
       )}
     </section>
