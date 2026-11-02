@@ -52,20 +52,27 @@
   color: var(--text-secondary);
   font-size: 12px;
 }
+.overview {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 2fr);
+  gap: 32px;
+  align-items: start;
+  border-block: 1px solid var(--border-color);
+  margin-top: 24px;
+}
 .summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 24px;
   margin: 28px 0 12px;
   padding: 24px 0;
-  border-block: 1px solid var(--border-color);
   dt {
     font-size: 13px;
     color: var(--text-secondary);
   }
   dd {
     margin: 8px 0;
-    font-size: clamp(24px, 3vw, 36px);
+    font-size: 22px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
@@ -75,6 +82,10 @@
     color: var(--text-secondary);
     display: block;
   }
+}
+.summary > div:first-child dd {
+  font-size: clamp(30px, 3vw, 40px);
+  letter-spacing: -0.025em;
 }
 .figure {
   margin: 28px 0;
@@ -127,6 +138,22 @@
     font-variant-numeric: tabular-nums;
   }
 }
+.tokenDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  margin: -12px 0 32px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  dt {
+    display: inline;
+  }
+  dd {
+    display: inline;
+    margin-left: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+}
 .tableHeader {
   display: flex;
   align-items: center;
@@ -164,7 +191,7 @@
     max-width: 240px;
     overflow-wrap: anywhere;
     white-space: normal;
-    min-width: 130px;
+    min-width: 100px;
   }
   thead th {
     color: var(--text-secondary);
@@ -195,21 +222,18 @@
   border: 0;
 }
 @media (max-width: 600px) {
-  .summary {
+  .overview {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 0;
   }
-  .summary > div {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 4px 12px;
-    align-items: center;
-    dd {
-      font-size: 26px;
-      grid-column: 2;
-      grid-row: 1 / 3;
-      margin: 0;
-    }
+  .summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  .summary > div:first-child {
+    grid-column: 1 / -1;
   }
   .controls {
     flex-direction: column;
@@ -229,5 +253,41 @@
   }
   .figure text {
     font-size: 20px;
+  }
+}
+
+.modelTable {
+  .rank,
+  thead th:first-child {
+    width: 24px;
+    min-width: 24px;
+    padding-left: 0;
+    color: var(--text-tertiary);
+    text-align: left;
+  }
+  .modelName,
+  thead th:nth-child(2) {
+    width: 100%;
+    min-width: 100px;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+.modelBar {
+  width: min(100%, 192px);
+  height: 2px;
+  margin-top: 8px;
+  span {
+    display: block;
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 2px;
+  }
+}
+@media (max-width: 600px) {
+  .tableWrap th,
+  .tableWrap td {
+    padding: 12px 6px;
   }
 }

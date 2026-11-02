@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import type { ClientUsage, UsageMetrics, UsageRange } from '@/services/api/clientUsage';
 import { formatEstimatedUsd } from '../pricing';
-import { UsagePricingSummary } from './UsagePricingSummary';
+import { UsageBreakdown } from './UsageBreakdown';
+import { chronologicalBuckets, type UsageMetric } from '../usageBreakdown';
 import styles from './ClientUsageMeter.module.scss';
 
 export type UsageStatus = 'loading' | 'ready' | 'error' | 'unsupported' | 'disconnected';
@@ -29,7 +30,8 @@ export function ClientUsageView({
   onRefresh,
 }: Props) {
   const { t, i18n } = useTranslation();
-  const [breakdown, setBreakdown] = useState('model');
+  const [breakdown, setBreakdown] = useState<'model' | 'time'>('model');
+  const [metric, setMetric] = useState<UsageMetric>('cost');
   const when = (value: string) =>
     new Date(value).toLocaleString(i18n.language, {
       timeZone: 'UTC',
@@ -51,21 +53,20 @@ export function ClientUsageView({
       )
     : 0;
   // Do not draw synthetic zero history before installation or beyond retention.
-  const timeline =
-    data?.timeline.filter((row) => Date.parse(row.time) + bucketMs > coveredFrom) ?? [];
+  const timeline = chronologicalBuckets(
+    data?.timeline.filter((row) => Date.parse(row.time) + bucketMs > coveredFrom) ?? []
+  );
   const observedTokens = (value: number, metrics: UsageMetrics) =>
     value === 0 && metrics.attempts > 0 ? t('usage_meter.unavailable') : number(value);
-  const rows: (UsageMetrics & { label: string })[] = !data
-    ? []
-    : breakdown === 'model'
-      ? data.models.map((row) => ({ ...row, label: row.model }))
-      : timeline.map((row) => ({ ...row, label: when(row.time) }));
   const series = [
     { key: 'totalTokens', label: 'total_tokens', color: 'var(--text-primary)' },
     { key: 'cacheReadTokens', label: 'cache_read', color: 'var(--viz-success)' },
     { key: 'outputTokens', label: 'output', color: 'var(--amber-color)' },
   ] as const;
-  const max = Math.max(1, ...timeline.flatMap((row) => series.map(({ key }) => row[key])));
+  const max =
+    metric === 'cost'
+      ? Math.max(0, ...timeline.map((row) => row.estimatedCostUsd ?? 0))
+      : Math.max(1, ...timeline.flatMap((row) => series.map(({ key }) => row[key])));
   const from = data ? Date.parse(data.window.from) : 0;
   const duration = data ? Math.max(1, Date.parse(data.window.to) - from) : 1;
   const plot = (key: (typeof series)[number]['key']) =>
@@ -75,6 +76,17 @@ export function ClientUsageView({
           `${32 + Math.max(0, Math.min(1, (Date.parse(row.time) - from) / duration)) * 716},${176 - (row[key] / max) * 152}`
       )
       .join(' ') ?? '';
+  // A missing cost interrupts the line instead of becoming a fabricated zero.
+  const costSegments: string[][] = [[]];
+  timeline.forEach((row) => {
+    if (row.estimatedCostUsd === null) {
+      costSegments.push([]);
+    } else {
+      costSegments[costSegments.length - 1].push(
+        `${32 + Math.max(0, Math.min(1, (Date.parse(row.time) - from) / duration)) * 716},${176 - (row.estimatedCostUsd / (max || 1)) * 152}`
+      );
+    }
+  });
   const clients = [
     { value: '', label: t('usage_meter.all_clients') },
     ...(data?.clients.map((entry) => ({
@@ -99,6 +111,19 @@ export function ClientUsageView({
         </div>
       </header>
       <div className={styles.controls}>
+        <div className={styles.ranges} role="group" aria-label={t('usage_meter.metric_a11y')}>
+          {(['cost', 'tokens'] as const).map((value) => (
+            <Button
+              key={value}
+              variant={metric === value ? 'secondary' : 'ghost'}
+              size="sm"
+              aria-pressed={metric === value}
+              onClick={() => setMetric(value)}
+            >
+              {t(`usage_meter.${value}`)}
+            </Button>
+          ))}
+        </div>
         <div className={styles.clientSelect}>
           <Select
             value={client}
@@ -149,97 +174,153 @@ export function ClientUsageView({
               )}
             </p>
           )}
-          <dl className={styles.summary}>
-            <div>
-              <dt>{t('usage_meter.attempts')}</dt>
-              <dd>{number(totals.attempts)}</dd>
-              <small>
-                {t('usage_meter.outcomes', {
-                  success: number(totals.succeeded),
-                  failed: number(totals.failed),
-                })}
-              </small>
-            </div>
-            <div>
-              <dt>{t('usage_meter.total_tokens')}</dt>
-              <dd>{observedTokens(totals.totalTokens, totals)}</dd>
-            </div>
-            <div>
-              <dt>{t('usage_meter.cache_rate')}</dt>
-              <dd>
-                {percent(totals.cacheRate === 0 && totals.attempts > 0 ? null : totals.cacheRate)}
-              </dd>
-            </div>
-          </dl>
+          <div className={styles.overview}>
+            <dl className={styles.summary}>
+              <div>
+                <dt>
+                  {t(
+                    metric === 'cost' ? 'usage_meter.pricing_subtotal' : 'usage_meter.total_tokens'
+                  )}
+                </dt>
+                <dd>
+                  {metric === 'cost'
+                    ? formatEstimatedUsd(
+                        totals.estimatedCostUsd,
+                        i18n.language,
+                        t('usage_meter.unavailable')
+                      )
+                    : observedTokens(totals.totalTokens, totals)}
+                </dd>
+              </div>
+              <div>
+                <dt>{t('usage_meter.attempts')}</dt>
+                <dd>{number(totals.attempts)}</dd>
+                <small>
+                  {t('usage_meter.outcomes', {
+                    success: number(totals.succeeded),
+                    failed: number(totals.failed),
+                  })}
+                </small>
+              </div>
+              <div>
+                <dt>{t('usage_meter.cache_rate')}</dt>
+                <dd>{percent(totals.cacheRate)}</dd>
+              </div>
+            </dl>
 
-          {totals.attempts === 0 ? (
-            <p className={styles.state}>{t('usage_meter.empty')}</p>
-          ) : (
-            <>
-              {totals.totalTokens > 0 && (
-                <figure className={styles.figure}>
-                  <figcaption>
-                    {t('usage_meter.timeline')}{' '}
-                    <span className={styles.note}>{t('usage_meter.utc')}</span>
-                  </figcaption>
-                  <div className={styles.legend}>
-                    {series.map((item) => (
-                      <span key={item.key}>
-                        <i style={{ background: item.color }} aria-hidden="true" />
-                        {t(`usage_meter.${item.label}`)}
-                      </span>
-                    ))}
-                  </div>
-                  <svg viewBox="0 0 780 210" role="img" aria-label={t('usage_meter.timeline_a11y')}>
-                    {[24, 100, 176].map((y) => (
-                      <line key={y} x1="32" y1={y} x2="748" y2={y} stroke="var(--border-color)" />
-                    ))}
-                    <text x="32" y="16">
-                      {number(max)}
-                    </text>
-                    <text x="32" y="198">
-                      {when(data.window.from)}
-                    </text>
-                    <text x="748" y="198" textAnchor="end">
-                      {when(data.window.to)}
-                    </text>
-                    {series.map((item) => (
-                      <polyline
-                        key={item.key}
-                        points={plot(item.key)}
-                        fill="none"
-                        stroke={item.color}
-                        strokeWidth="2"
-                      />
-                    ))}
-                    {timeline.length === 1 &&
-                      series.map((item) => (
-                        <circle
-                          key={item.key}
-                          cx={
-                            32 +
-                            Math.max(
-                              0,
-                              Math.min(1, (Date.parse(timeline[0].time) - from) / duration)
-                            ) *
-                              716
-                          }
-                          cy={176 - (timeline[0][item.key] / max) * 152}
-                          r="3"
-                          fill={item.color}
-                        />
+            {totals.attempts === 0 ? (
+              <p className={styles.state}>{t('usage_meter.empty')}</p>
+            ) : (
+              <>
+                {totals.totalTokens > 0 && (
+                  <figure className={styles.figure}>
+                    <figcaption>
+                      {t(metric === 'cost' ? 'usage_meter.cost_timeline' : 'usage_meter.timeline')}{' '}
+                      <span className={styles.note}>{t('usage_meter.utc')}</span>
+                    </figcaption>
+                    <div className={styles.legend}>
+                      {(metric === 'cost'
+                        ? [{ key: 'cost', label: 'cost', color: 'var(--text-primary)' }]
+                        : series
+                      ).map((item) => (
+                        <span key={item.key}>
+                          <i style={{ background: item.color }} aria-hidden="true" />
+                          {t(`usage_meter.${item.label}`)}
+                        </span>
                       ))}
-                  </svg>
-                </figure>
-              )}
+                    </div>
+                    <svg
+                      viewBox="0 0 780 210"
+                      role="img"
+                      aria-label={t(
+                        metric === 'cost'
+                          ? 'usage_meter.cost_timeline_a11y'
+                          : 'usage_meter.timeline_a11y'
+                      )}
+                    >
+                      {[24, 100, 176].map((y) => (
+                        <line key={y} x1="32" y1={y} x2="748" y2={y} stroke="var(--border-color)" />
+                      ))}
+                      <text x="32" y="16">
+                        {metric === 'cost'
+                          ? formatEstimatedUsd(
+                              timeline.some((row) => row.estimatedCostUsd !== null) ? max : null,
+                              i18n.language,
+                              t('usage_meter.unavailable')
+                            )
+                          : number(max)}
+                      </text>
+                      <text x="32" y="198">
+                        {when(data.window.from)}
+                      </text>
+                      <text x="748" y="198" textAnchor="end">
+                        {when(data.window.to)}
+                      </text>
+                      {metric === 'cost'
+                        ? costSegments.map((segment, index) => (
+                            <polyline
+                              key={index}
+                              points={segment.join(' ')}
+                              fill="none"
+                              stroke="var(--text-primary)"
+                              strokeWidth="2"
+                            />
+                          ))
+                        : series.map((item) => (
+                            <polyline
+                              key={item.key}
+                              points={plot(item.key)}
+                              fill="none"
+                              stroke={item.color}
+                              strokeWidth="2"
+                            />
+                          ))}
+                      {metric === 'cost' &&
+                        costSegments
+                          .filter((segment) => segment.length === 1)
+                          .map((segment, index) => {
+                            const [cx, cy] = segment[0].split(',');
+                            return (
+                              <circle
+                                key={index}
+                                cx={cx}
+                                cy={cy}
+                                r="3"
+                                fill="var(--text-primary)"
+                              />
+                            );
+                          })}
+                      {metric === 'tokens' &&
+                        timeline.length === 1 &&
+                        series.map((item) => (
+                          <circle
+                            key={item.key}
+                            cx={
+                              32 +
+                              Math.max(
+                                0,
+                                Math.min(1, (Date.parse(timeline[0].time) - from) / duration)
+                              ) *
+                                716
+                            }
+                            cy={176 - (timeline[0][item.key] / max) * 152}
+                            r="3"
+                            fill={item.color}
+                          />
+                        ))}
+                    </svg>
+                  </figure>
+                )}
+              </>
+            )}
+          </div>
+          {totals.attempts > 0 && (
+            <>
               <dl className={styles.tokens}>
                 {(
                   [
-                    ['input', totals.inputTokens],
+                    ['total_tokens', totals.totalTokens],
                     ['cache_read', totals.cacheReadTokens],
-                    ['cache_write', totals.cacheWriteTokens],
-                    ['output', totals.outputTokens],
-                    ['unclassified_cache', totals.unclassifiedCachedTokens],
                   ] as const
                 ).map(([key, value]) => (
                   <div key={key}>
@@ -251,6 +332,34 @@ export function ClientUsageView({
                   <dt>{t('usage_meter.uncached_input')}</dt>
                   <dd>{t('usage_meter.unavailable')}</dd>
                 </div>
+                <div>
+                  <dt>{t('usage_meter.output')}</dt>
+                  <dd>{observedTokens(totals.outputTokens, totals)}</dd>
+                </div>
+                <div>
+                  <dt>{t('usage_meter.pricing_savings')}</dt>
+                  <dd>
+                    {formatEstimatedUsd(
+                      data.pricing.estimatedCacheSavingsUsd,
+                      i18n.language,
+                      t('usage_meter.unavailable')
+                    )}
+                  </dd>
+                </div>
+              </dl>
+              <dl className={styles.tokenDetails}>
+                {(
+                  [
+                    ['input', totals.inputTokens],
+                    ['cache_write', totals.cacheWriteTokens],
+                    ['unclassified_cache', totals.unclassifiedCachedTokens],
+                  ] as const
+                ).map(([key, value]) => (
+                  <div key={key}>
+                    <dt>{t(`usage_meter.${key}`)}</dt>
+                    <dd>{observedTokens(value, totals)}</dd>
+                  </div>
+                ))}
               </dl>
               <div className={styles.tableHeader}>
                 <h3>{t('usage_meter.breakdown')}</h3>
@@ -260,83 +369,23 @@ export function ClientUsageView({
                     { value: 'model', label: t('usage_meter.model') },
                     { value: 'time', label: t(`usage_meter.bucket_${data.window.bucket}`) },
                   ]}
-                  onChange={setBreakdown}
+                  onChange={(value) => {
+                    if (value === 'model' || value === 'time') setBreakdown(value);
+                  }}
                   ariaLabel={t('usage_meter.breakdown_a11y')}
                   fullWidth={false}
                   size="sm"
                 />
               </div>
-              <div
-                className={styles.tableWrap}
-                tabIndex={0}
-                role="region"
-                aria-label={t('usage_meter.table_a11y')}
-              >
-                <table>
-                  <caption className={styles.srOnly}>{t('usage_meter.table_a11y')}</caption>
-                  <thead>
-                    <tr>
-                      {[
-                        'model_time',
-                        'attempts',
-                        'success',
-                        'failed',
-                        'total_tokens',
-                        'cache_read',
-                        'cache_write',
-                        'output',
-                      ].map((key) => (
-                        <th scope="col" key={key}>
-                          {t(`usage_meter.${key}`)}
-                        </th>
-                      ))}
-                      {data.pricing.available && (
-                        <>
-                          <th scope="col">{t('usage_meter.pricing_priced_attempts')}</th>
-                          <th scope="col">{t('usage_meter.pricing_subtotal')}</th>
-                        </>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row) => (
-                      <tr key={row.label}>
-                        <th scope="row">{row.label}</th>
-                        {[
-                          row.attempts,
-                          row.succeeded,
-                          row.failed,
-                          row.totalTokens,
-                          row.cacheReadTokens,
-                          row.cacheWriteTokens,
-                          row.outputTokens,
-                        ].map((value, index) => (
-                          <td key={index}>
-                            {index < 3 ? number(value) : observedTokens(value, row)}
-                          </td>
-                        ))}
-                        {data.pricing.available && (
-                          <>
-                            <td>
-                              {number(row.pricedAttempts)} / {number(row.attempts)}
-                            </td>
-                            <td>
-                              {formatEstimatedUsd(
-                                row.estimatedCostUsd,
-                                i18n.language,
-                                t('usage_meter.unavailable')
-                              )}
-                            </td>
-                          </>
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <UsageBreakdown
+                models={data.models}
+                timeline={timeline}
+                mode={breakdown}
+                bucket={data.window.bucket}
+                metric={metric}
+              />
             </>
           )}
-          <UsagePricingSummary pricing={data.pricing} />
         </>
       )}
     </section>

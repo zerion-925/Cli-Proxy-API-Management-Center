@@ -1,3 +1,4 @@
+import { fixtureBreakdown } from './usageBreakdownFixture';
 import { fixtureUsage } from './usageMeterFixture';
 import officialRuntime from '../fixtures/usage-meter-official-runtime.json';
 import pricedRuntime from '../fixtures/usage-meter-pricing-official-runtime.json';
@@ -47,6 +48,17 @@ Bun.serve({
                 },
               };
       return new Response(JSON.stringify(data), { headers });
+    }
+    if (mode === 'breakdown') {
+      return new Response(
+        JSON.stringify(
+          fixtureBreakdown(
+            url.searchParams.get('range') ?? '24h',
+            url.searchParams.get('client') ?? ''
+          )
+        ),
+        { headers }
+      );
     }
     const data = fixtureUsage(
       url.searchParams.get('range') ?? '24h',

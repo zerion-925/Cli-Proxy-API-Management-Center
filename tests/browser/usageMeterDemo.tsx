@@ -52,6 +52,7 @@ export function Demo() {
             'unsupported',
             'error',
             'official-runtime',
+            'breakdown',
             'pricing',
             'pricing-stale',
             'pricing-runtime',

@@ -49,7 +49,7 @@ describe('client meter presentation', () => {
     }
     expect(html).toContain('<dd>3</dd>');
     expect(html).toContain('<dd>170</dd>');
-    expect(html).toContain('usage_meter.timeline_a11y');
+    expect(html).toContain('usage_meter.cost_timeline_a11y');
     expect(html).toContain('usage_meter.breakdown');
   });
   test('ordinary partial coverage is not a fault but disabled and lost collection remain visible', () => {
@@ -100,6 +100,14 @@ describe('client meter presentation', () => {
     expect(
       (render({ data }).match(/<dd>usage_meter.unavailable<\/dd>/g) ?? []).length
     ).toBeGreaterThanOrEqual(6);
+  });
+  test('a measured zero cache rate is preserved when the classified denominator is available', () => {
+    const data = normalizeClientUsage(response);
+    data.totals.cacheRate = 0;
+    data.totals.cacheRateDenominator = 100;
+    expect(render({ data })).toContain('<dd>0%</dd>');
+    data.totals.cacheRate = null;
+    expect(render({ data })).not.toContain('<dd>0%</dd>');
   });
   test('empty collection renders an explicit no-history state', () => {
     const data = normalizeClientUsage({

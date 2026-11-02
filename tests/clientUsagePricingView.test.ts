@@ -4,7 +4,6 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { createInstance } from 'i18next';
 import { I18nextProvider } from 'react-i18next';
 import { ClientUsageView } from '../src/features/dashboard/components/ClientUsageView';
-import { UsagePricingSummary } from '../src/features/dashboard/components/UsagePricingSummary';
 import { normalizeClientUsage } from '../src/services/api/clientUsage';
 import { pricedResponse } from './fixtures/usagePricing';
 
@@ -15,12 +14,20 @@ const render = (raw = pricedResponse) =>
     createElement(
       I18nextProvider,
       { i18n },
-      createElement(UsagePricingSummary, { pricing: normalizeClientUsage(raw).pricing })
+      createElement(ClientUsageView, {
+        data: normalizeClientUsage(raw),
+        status: 'ready',
+        range: '24h',
+        client: '',
+        onRangeChange: () => {},
+        onClientChange: () => {},
+        onRefresh: () => {},
+      })
     )
   );
 
 describe('models.dev estimate presentation', () => {
-  test('breakdown shows priced-attempt coverage alongside estimated subtotals', () => {
+  test('breakdown omits priced-attempt coverage and keeps estimated semantics', () => {
     const html = renderToStaticMarkup(
       createElement(
         I18nextProvider,
@@ -36,15 +43,22 @@ describe('models.dev estimate presentation', () => {
         })
       )
     );
-    expect(html.match(/<thead>[\s\S]*?<\/thead>/)?.[0]).toContain(
+    expect(html.match(/<thead>[\s\S]*?<\/thead>/)?.[0]).not.toContain(
       'usage_meter.pricing_priced_attempts'
     );
+    expect(html).toContain('usage_meter.pricing_subtotal');
+    expect(html).toContain('usage_meter.metric_a11y');
+    expect(html).toContain('usage_meter.pricing_savings');
+    expect(html).not.toContain('usage_meter.pricing_title');
+    expect(html.indexOf('usage_meter.pricing_subtotal')).toBeLessThan(
+      html.indexOf('usage_meter.cost_timeline')
+    );
   });
-  test('shows compact partial coverage beside cost without any disclosure content', () => {
+  test('estimated subtotal has no coverage ratio or disclosure content', () => {
     const html = render();
     expect(html).toContain('usage_meter.pricing_subtotal');
-    expect(html).toContain('(2/3)');
-    expect(html).toContain('usage_meter.pricing_coverage_a11y');
+    expect(html).not.toContain('(2/3)');
+    expect(html).not.toContain('usage_meter.pricing_coverage_a11y');
     expect(html).toContain('USD');
     expect(html).not.toContain('<details');
     expect(html).not.toContain('<p>');
@@ -85,6 +99,8 @@ describe('models.dev estimate presentation', () => {
         estimated_cache_savings_usd: null,
         snapshot_versions: [],
       },
+      models: [],
+      timeline: [],
       totals: {
         ...pricedResponse.totals,
         priced_attempts: 0,
