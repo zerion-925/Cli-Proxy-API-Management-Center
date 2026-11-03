@@ -117,7 +117,8 @@ export function ApiKeyUsage({
               <th scope="row">
                 {t(data.selectedClient ? 'usage_meter.selected_key' : 'usage_meter.all_clients')}
               </th>
-              <td /> <td>{data.totals.attempts.toLocaleString(i18n.language)}</td>
+              <td />
+              <td>{data.totals.attempts.toLocaleString(i18n.language)}</td>
               <td>{data.totals.totalTokens.toLocaleString(i18n.language)}</td>
               <td>{money(data.totals.estimatedCostUsd)}</td>
               <td />
