@@ -61,7 +61,9 @@ export function ClientUsageView({
     data?.timeline.filter((row) => Date.parse(row.time) + bucketMs > coveredFrom) ?? []
   );
   const observedTokens = (value: number, metrics: UsageMetrics) =>
-    value === 0 && metrics.attempts > 0 ? t('usage_meter.unavailable') : number(value);
+    value === 0 && metrics.totalTokens === 0 && metrics.attempts > 0
+      ? t('usage_meter.unavailable')
+      : number(value);
   const series = [
     { key: 'totalTokens', label: 'total_tokens', color: 'var(--text-primary)' },
     { key: 'cacheReadTokens', label: 'cache_read', color: 'var(--viz-success)' },
@@ -224,7 +226,15 @@ export function ClientUsageView({
               </div>
               <div>
                 <dt>{t('usage_meter.cache_rate')}</dt>
-                <dd>{percent(totals.cacheRate)}</dd>
+                <dd>{percent(totals.accountedCacheRate ?? totals.cacheRate)}</dd>
+                {totals.accountedAttempts > 0 && totals.accountedAttempts < totals.attempts && (
+                  <small>
+                    {t('usage_meter.token_coverage', {
+                      known: totals.accountedAttempts,
+                      total: totals.attempts,
+                    })}
+                  </small>
+                )}
               </div>
             </dl>
 
@@ -353,7 +363,19 @@ export function ClientUsageView({
                 ))}
                 <div>
                   <dt>{t('usage_meter.uncached_input')}</dt>
-                  <dd>{t('usage_meter.unavailable')}</dd>
+                  <dd>
+                    {totals.uncachedInputTokens === null
+                      ? t('usage_meter.unavailable')
+                      : number(totals.uncachedInputTokens)}
+                  </dd>
+                  {totals.accountedAttempts > 0 && totals.accountedAttempts < totals.attempts && (
+                    <small className={styles.note}>
+                      {t('usage_meter.token_coverage', {
+                        known: totals.accountedAttempts,
+                        total: totals.attempts,
+                      })}
+                    </small>
+                  )}
                 </div>
                 <div>
                   <dt>{t('usage_meter.output')}</dt>
@@ -380,7 +402,9 @@ export function ClientUsageView({
                 ).map(([key, value]) => (
                   <div key={key}>
                     <dt>{t(`usage_meter.${key}`)}</dt>
-                    <dd>{observedTokens(value, totals)}</dd>
+                    <dd>
+                      {key === 'unclassified_cache' ? number(value) : observedTokens(value, totals)}
+                    </dd>
                   </div>
                 ))}
               </dl>

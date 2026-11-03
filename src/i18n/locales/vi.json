@@ -2524,6 +2524,7 @@
     "cost_coverage": "Đã tính giá: {{priced}} / {{total}} lượt",
     "reason_legacy_unpriced": "Lượt cũ không có giá đã lưu: {{count}}",
     "reason_unknown_token_accounting": "Dữ liệu token chưa đầy đủ: {{count}}",
-    "reason_other": "Không có giá: {{count}}"
+    "reason_other": "Không có giá: {{count}}",
+    "token_coverage": "Dựa trên {{known}} / {{total}} lượt"
   }
 }

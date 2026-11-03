@@ -2518,6 +2518,7 @@
     "cost_coverage": "Fiyatlandırılan: {{total}} denemeden {{priced}}",
     "reason_legacy_unpriced": "Kayıtlı fiyatı olmayan geçmiş denemeler: {{count}}",
     "reason_unknown_token_accounting": "Eksik token verisi: {{count}}",
-    "reason_other": "Fiyat mevcut değil: {{count}}"
+    "reason_other": "Fiyat mevcut değil: {{count}}",
+    "token_coverage": "{{total}} denemeden {{known}} tanesine göre"
   }
 }

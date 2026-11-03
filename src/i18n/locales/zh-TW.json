@@ -2544,6 +2544,7 @@
     "cost_coverage": "已計價：{{priced}} / {{total}} 次嘗試",
     "reason_legacy_unpriced": "未儲存價格的歷史嘗試：{{count}}",
     "reason_unknown_token_accounting": "Token 資料不完整：{{count}}",
-    "reason_other": "價格無法取得：{{count}}"
+    "reason_other": "價格無法取得：{{count}}",
+    "token_coverage": "根據 {{total}} 次嘗試中的 {{known}} 次"
   }
 }

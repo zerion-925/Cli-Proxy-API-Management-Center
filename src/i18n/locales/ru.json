@@ -2512,6 +2512,7 @@
     "cost_coverage": "Оценено: {{priced}} из {{total}} попыток",
     "reason_legacy_unpriced": "Исторические попытки без сохранённой цены: {{count}}",
     "reason_unknown_token_accounting": "Неполные данные токенов: {{count}}",
-    "reason_other": "Цена недоступна: {{count}}"
+    "reason_other": "Цена недоступна: {{count}}",
+    "token_coverage": "На основе {{known}} из {{total}} попыток"
   }
 }

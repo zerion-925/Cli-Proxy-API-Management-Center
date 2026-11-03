@@ -2518,6 +2518,7 @@
     "cost_coverage": "가격 계산: {{total}}회 중 {{priced}}회",
     "reason_legacy_unpriced": "저장된 가격이 없는 과거 시도: {{count}}",
     "reason_unknown_token_accounting": "불완전한 토큰 데이터: {{count}}",
-    "reason_other": "가격 없음: {{count}}"
+    "reason_other": "가격 없음: {{count}}",
+    "token_coverage": "{{total}}회 중 {{known}}회 기준"
   }
 }

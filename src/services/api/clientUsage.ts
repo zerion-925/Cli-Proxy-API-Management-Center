@@ -5,6 +5,9 @@ import { isRecord } from '@/utils/helpers';
 export type UsageRange = '24h' | '7d' | '30d' | '90d';
 export type UsageBucket = 'hour' | 'day';
 export interface UsageMetrics {
+  accountedAttempts: number;
+  uncachedInputTokens: number | null;
+  accountedCacheRate: number | null;
   unpricedReasons?: Record<string, number>;
   attempts: number;
   succeeded: number;
@@ -157,7 +160,24 @@ const metrics = (value: unknown): UsageMetrics => {
   const rate = raw.cache_rate;
   if (rate !== null && (typeof rate !== 'number' || !Number.isFinite(rate) || rate < 0 || rate > 1))
     invalid();
+  const accountedRate = raw.accounted_cache_rate;
+  if (
+    accountedRate !== undefined &&
+    accountedRate !== null &&
+    (typeof accountedRate !== 'number' ||
+      !Number.isFinite(accountedRate) ||
+      accountedRate < 0 ||
+      accountedRate > 1)
+  )
+    invalid();
   const result: UsageMetrics = {
+    accountedAttempts: raw.accounted_attempts === undefined ? 0 : count(raw.accounted_attempts),
+    uncachedInputTokens:
+      raw.uncached_input_tokens === undefined || raw.uncached_input_tokens === null
+        ? null
+        : count(raw.uncached_input_tokens),
+    accountedCacheRate:
+      accountedRate === undefined || accountedRate === null ? null : (accountedRate as number),
     unpricedReasons: Object.fromEntries(
       Object.entries(record(raw.unpriced_reasons ?? {})).map(([key, value]) => [key, count(value)])
     ),
@@ -182,6 +202,7 @@ const metrics = (value: unknown): UsageMetrics => {
     estimatedCacheSavingsUsd: money(raw.estimated_cache_savings_usd, true),
   };
   if (
+    result.accountedAttempts > result.attempts ||
     result.pricedAttempts > result.attempts ||
     result.savingsPricedAttempts > result.pricedAttempts ||
     (result.pricedAttempts === 0 && result.estimatedCostUsd !== null) ||

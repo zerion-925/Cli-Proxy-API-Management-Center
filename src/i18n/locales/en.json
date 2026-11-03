@@ -2518,6 +2518,7 @@
     "cost_coverage": "Priced: {{priced}} of {{total}} attempts",
     "reason_legacy_unpriced": "Historical attempts without a saved price: {{count}}",
     "reason_unknown_token_accounting": "Incomplete token data: {{count}}",
-    "reason_other": "Price unavailable: {{count}}"
+    "reason_other": "Price unavailable: {{count}}",
+    "token_coverage": "Based on {{known}} of {{total}} attempts"
   }
 }

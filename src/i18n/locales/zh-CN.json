@@ -2516,6 +2516,7 @@
     "cost_coverage": "已计价：{{priced}} / {{total}} 次尝试",
     "reason_legacy_unpriced": "未保存价格的历史尝试：{{count}}",
     "reason_unknown_token_accounting": "Token 数据不完整：{{count}}",
-    "reason_other": "价格不可用：{{count}}"
+    "reason_other": "价格不可用：{{count}}",
+    "token_coverage": "基于 {{total}} 次尝试中的 {{known}} 次"
   }
 }
