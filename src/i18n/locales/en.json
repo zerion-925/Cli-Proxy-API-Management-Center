@@ -2505,13 +2505,9 @@
     "cost_unavailable": "Cost data is unavailable because pricing is not configured. Unavailable cost does not mean zero cost.",
     "health": "Collection health · Ingestion failures: {{failures}} · Dropped events: {{dropped}} · Duplicate events: {{duplicates}} · Missing execution IDs: {{missing}}",
     "no_backfill": "Only events received since collection began can appear. Delivery is best effort, with no replay guarantee or historical backfill; gaps may remain.",
-    "key_breakdown": "API key breakdown",
     "api_key": "API key",
-    "models_used": "Models used",
-    "key_actions": "Actions",
     "rename_key": "Name key",
     "rename_key_a11y": "Name {{key}}",
-    "selected_key": "Selected API key",
     "key_name": "API key name",
     "key_name_hint": "Leave blank to show the masked key prefix.",
     "key_name_error": "Could not save the name. Try again.",
@@ -2519,6 +2515,11 @@
     "reason_legacy_unpriced": "Historical attempts without a saved price: {{count}}",
     "reason_unknown_token_accounting": "Incomplete token data: {{count}}",
     "reason_other": "Price unavailable: {{count}}",
-    "token_coverage": "Based on {{known}} of {{total}} attempts"
+    "token_coverage": "Based on {{known}} of {{total}} attempts",
+    "manage_key_names": "Manage key names",
+    "key_names_title": "API key names",
+    "back_to_usage": "Back to usage",
+    "key_names_description": "Name the API keys that have recorded usage. Names appear in the usage selector.",
+    "key_names_empty": "Keys appear here after their first recorded request."
   }
 }

@@ -2505,13 +2505,9 @@
     "cost_unavailable": "Fiyatlandırma yapılandırılmadığı için maliyet verileri sunulmuyor. Maliyet verisinin olmaması, maliyetin sıfır olduğu anlamına gelmez.",
     "health": "Toplama durumu · Veri alma hataları: {{failures}} · Atılan olaylar: {{dropped}} · Yinelenen olaylar: {{duplicates}} · Eksik yürütme kimlikleri: {{missing}}",
     "no_backfill": "Yalnızca veri toplama başladıktan sonra alınan olaylar gösterilebilir. Olayların iletilmesi veya yeniden gönderilmesi garanti edilmez, geçmiş veriler sonradan eklenmez; boşluklar kalabilir.",
-    "key_breakdown": "API anahtarı dökümü",
     "api_key": "API anahtarı",
-    "models_used": "Kullanılan modeller",
-    "key_actions": "İşlemler",
     "rename_key": "Anahtarı adlandır",
     "rename_key_a11y": "{{key}} anahtarını adlandır",
-    "selected_key": "Seçili API anahtarı",
     "key_name": "API anahtarı adı",
     "key_name_hint": "Maskelenmiş anahtar önekini göstermek için boş bırakın.",
     "key_name_error": "Ad kaydedilemedi. Tekrar deneyin.",
@@ -2519,6 +2515,11 @@
     "reason_legacy_unpriced": "Kayıtlı fiyatı olmayan geçmiş denemeler: {{count}}",
     "reason_unknown_token_accounting": "Eksik token verisi: {{count}}",
     "reason_other": "Fiyat mevcut değil: {{count}}",
-    "token_coverage": "{{total}} denemeden {{known}} tanesine göre"
+    "token_coverage": "{{total}} denemeden {{known}} tanesine göre",
+    "manage_key_names": "Anahtar adlarını yönet",
+    "key_names_title": "API anahtarı adları",
+    "back_to_usage": "Kullanıma dön",
+    "key_names_description": "Kullanım kaydı olan API anahtarlarına ad verin. Adlar kullanım seçicisinde görünür.",
+    "key_names_empty": "Anahtarlar ilk istekleri kaydedildikten sonra burada görünür."
   }
 }

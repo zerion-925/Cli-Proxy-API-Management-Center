@@ -8,8 +8,9 @@ import {
   type UsageRange,
 } from '@/services/api/clientUsage';
 import { ClientUsageView, type UsageStatus } from './ClientUsageView';
+import { ApiKeyNames } from './ApiKeyNames';
 
-export function ClientUsageMeter() {
+export function ClientUsageMeter({ view = 'usage' }: { view?: 'usage' | 'names' }) {
   const apiBase = useAuthStore((state) => state.apiBase);
   const managementKey = useAuthStore((state) => state.managementKey);
   const connected = useAuthStore(
@@ -83,26 +84,35 @@ export function ClientUsageMeter() {
     : !supportsPlugin
       ? 'unsupported'
       : (visible?.status ?? 'loading');
+  const data = status === 'ready' ? (visible?.data ?? null) : null;
+  const onRefresh = () => {
+    setResult(null);
+    setRefresh((value) => value + 1);
+  };
+  if (view === 'names') {
+    return (
+      <ApiKeyNames
+        key={revision}
+        data={data}
+        status={status}
+        onRefresh={onRefresh}
+        onSaveName={async (id, name) => {
+          await saveClientName(apiBase, id, name);
+          if (apiClient.getConnectionRevision() === revision) onRefresh();
+        }}
+      />
+    );
+  }
   return (
     <ClientUsageView
       key={revision}
-      data={status === 'ready' ? (visible?.data ?? null) : null}
+      data={data}
       status={status}
       range={range}
       client={client}
-      onSaveName={async (id, name) => {
-        await saveClientName(apiBase, id, name);
-        if (apiClient.getConnectionRevision() === revision) {
-          setResult(null);
-          setRefresh((value) => value + 1);
-        }
-      }}
       onRangeChange={setRange}
       onClientChange={(client) => setSelection({ revision, client })}
-      onRefresh={() => {
-        setResult(null);
-        setRefresh((value) => value + 1);
-      }}
+      onRefresh={onRefresh}
     />
   );
 }

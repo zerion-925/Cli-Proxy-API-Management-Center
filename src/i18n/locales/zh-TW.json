@@ -2531,13 +2531,9 @@
     "cost_unavailable": "尚未設定定價，無法提供費用資料。無法取得費用不代表費用為零。",
     "health": "收集狀況 · 接收失敗：{{failures}} · 捨棄事件：{{dropped}} · 重複事件：{{duplicates}} · 缺少執行識別碼：{{missing}}",
     "no_backfill": "僅能顯示開始收集後收到的事件。事件以盡力而為的方式傳遞，不保證重播，也不補入歷史資料；收集缺口可能持續存在。",
-    "key_breakdown": "API 金鑰明細",
     "api_key": "API 金鑰",
-    "models_used": "使用的模型",
-    "key_actions": "操作",
     "rename_key": "命名金鑰",
     "rename_key_a11y": "為 {{key}} 命名",
-    "selected_key": "所選 API 金鑰",
     "key_name": "API 金鑰名稱",
     "key_name_hint": "留空以顯示遮罩金鑰前綴。",
     "key_name_error": "無法儲存名稱，請重試。",
@@ -2545,6 +2541,11 @@
     "reason_legacy_unpriced": "未儲存價格的歷史嘗試：{{count}}",
     "reason_unknown_token_accounting": "Token 資料不完整：{{count}}",
     "reason_other": "價格無法取得：{{count}}",
-    "token_coverage": "根據 {{total}} 次嘗試中的 {{known}} 次"
+    "token_coverage": "根據 {{total}} 次嘗試中的 {{known}} 次",
+    "manage_key_names": "管理金鑰名稱",
+    "key_names_title": "API 金鑰名稱",
+    "back_to_usage": "返回用量",
+    "key_names_description": "為已有用量紀錄的 API 金鑰命名。名稱將顯示在用量選擇器中。",
+    "key_names_empty": "金鑰首次產生請求紀錄後會顯示在此處。"
   }
 }

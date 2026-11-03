@@ -2503,13 +2503,9 @@
     "cost_unavailable": "尚未配置定价，费用数据不可用。费用不可用并不表示费用为零。",
     "health": "采集状况 · 摄取失败：{{failures}} · 丢弃事件：{{dropped}} · 重复事件：{{duplicates}} · 缺少执行标识：{{missing}}",
     "no_backfill": "仅能显示开始采集后收到的事件。事件按尽力而为原则传递，不保证重放，也不回填历史数据；采集缺口可能持续存在。",
-    "key_breakdown": "API 密钥明细",
     "api_key": "API 密钥",
-    "models_used": "使用的模型",
-    "key_actions": "操作",
     "rename_key": "命名密钥",
     "rename_key_a11y": "为 {{key}} 命名",
-    "selected_key": "所选 API 密钥",
     "key_name": "API 密钥名称",
     "key_name_hint": "留空以显示掩码密钥前缀。",
     "key_name_error": "无法保存名称，请重试。",
@@ -2517,6 +2513,11 @@
     "reason_legacy_unpriced": "未保存价格的历史尝试：{{count}}",
     "reason_unknown_token_accounting": "Token 数据不完整：{{count}}",
     "reason_other": "价格不可用：{{count}}",
-    "token_coverage": "基于 {{total}} 次尝试中的 {{known}} 次"
+    "token_coverage": "基于 {{total}} 次尝试中的 {{known}} 次",
+    "manage_key_names": "管理密钥名称",
+    "key_names_title": "API 密钥名称",
+    "back_to_usage": "返回用量",
+    "key_names_description": "为已有用量记录的 API 密钥命名。名称将显示在用量选择器中。",
+    "key_names_empty": "密钥首次产生请求记录后会显示在此处。"
   }
 }
