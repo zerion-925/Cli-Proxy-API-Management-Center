@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import type { ClientUsage, UsageMetrics, UsageRange } from '@/services/api/clientUsage';
 import { formatEstimatedUsd } from '../pricing';
+import { ApiKeyUsage } from './ApiKeyUsage';
+import { clientDisplayName } from '../clientNames';
 import { UsageBreakdown } from './UsageBreakdown';
 import { chronologicalBuckets, type UsageMetric } from '../usageBreakdown';
 import styles from './ClientUsageMeter.module.scss';
@@ -17,6 +19,7 @@ interface Props {
   onRangeChange: (range: UsageRange) => void;
   onClientChange: (client: string) => void;
   onRefresh: () => void;
+  onSaveName?: (client: string, name: string) => Promise<void>;
 }
 const number = (value: number) => value.toLocaleString();
 
@@ -28,6 +31,7 @@ export function ClientUsageView({
   onRangeChange,
   onClientChange,
   onRefresh,
+  onSaveName,
 }: Props) {
   const { t, i18n } = useTranslation();
   const [breakdown, setBreakdown] = useState<'model' | 'time'>('model');
@@ -94,7 +98,7 @@ export function ClientUsageView({
       label:
         entry.namespace === 'unattributed'
           ? t('usage_meter.unattributed')
-          : `${t(`usage_meter.namespace_${entry.namespace}`)} · ${entry.id.slice(-10)}`,
+          : clientDisplayName(entry, t('usage_meter.api_key'), data?.clients),
     })) ?? []),
   ];
 
@@ -172,6 +176,22 @@ export function ClientUsageView({
                   ? 'usage_meter.state_disabled'
                   : 'usage_meter.collection_issue'
               )}
+            </p>
+          )}
+          {data.pricing.unpricedAttempts > 0 && (
+            <p className={styles.coverage} role="status">
+              {t('usage_meter.cost_coverage', {
+                priced: data.pricing.pricedAttempts,
+                total: totals.attempts,
+              })}
+              {Object.entries(totals.unpricedReasons ?? {}).map(([reason, count]) => (
+                <span key={reason}>
+                  {t(`usage_meter.reason_${reason}`, {
+                    count,
+                    defaultValue: t('usage_meter.reason_other', { count }),
+                  })}
+                </span>
+              ))}
             </p>
           )}
           <div className={styles.overview}>
@@ -314,6 +334,9 @@ export function ClientUsageView({
               </>
             )}
           </div>
+          {data.clientUsage.length > 0 && (
+            <ApiKeyUsage data={data} onClientChange={onClientChange} onSaveName={onSaveName} />
+          )}
           {totals.attempts > 0 && (
             <>
               <dl className={styles.tokens}>

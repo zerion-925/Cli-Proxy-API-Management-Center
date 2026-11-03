@@ -291,3 +291,28 @@
     padding: 12px 6px;
   }
 }
+
+.keySection {
+  margin: 32px 0;
+  h2 {
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+}
+.keyHint {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 11px;
+  margin-top: 6px;
+}
+.tableWrap .keyModels {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-width: 120px;
+  max-width: 260px;
+  text-align: left;
+}
+.keyEditor {
+  margin-top: 20px;
+  max-width: 440px;
+}
