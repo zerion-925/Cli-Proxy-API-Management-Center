@@ -139,3 +139,17 @@ test('shows covered uncached input, partial cache rate, and measured zero counte
   expect(html).toContain('usage_meter.token_coverage');
   expect(html.match(/<dd>0<\/dd>/g)?.length).toBeGreaterThanOrEqual(2);
 });
+
+test('usage keeps the selector and totals but moves naming to a separate screen', () => {
+  const data = normalizeClientUsage(response);
+  data.clients[0].name = 'Operations';
+  data.clientUsage = [{ ...data.totals, clientId: data.clients[0].id, models: ['model-a'] }];
+  const html = render({ data });
+  expect(render({ data, client: data.clients[0].id })).toContain('Operations');
+  expect(html).toContain('usage_meter.client_a11y');
+  expect(html).toContain('usage_meter.all_clients');
+  expect(html).toContain('href="#/usage/keys"');
+  expect(html).not.toContain('usage_meter.key_breakdown');
+  expect(html).not.toContain('usage_meter.rename_key');
+  expect(html).toContain('usage_meter.breakdown_a11y');
+});

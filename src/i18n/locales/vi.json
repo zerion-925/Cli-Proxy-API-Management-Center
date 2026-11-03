@@ -2511,13 +2511,9 @@
     "cost_unavailable": "Không có dữ liệu chi phí vì chưa cấu hình đơn giá. Không có dữ liệu chi phí không có nghĩa là chi phí bằng không.",
     "health": "Tình trạng thu thập · Lỗi tiếp nhận: {{failures}} · Sự kiện bị loại bỏ: {{dropped}} · Sự kiện trùng lặp: {{duplicates}} · Thiếu mã thực thi: {{missing}}",
     "no_backfill": "Chỉ có thể hiển thị các sự kiện nhận được kể từ khi bắt đầu thu thập. Việc chuyển sự kiện không được bảo đảm, không cam kết phát lại hay bổ sung lịch sử; dữ liệu bị thiếu có thể vẫn không được khôi phục.",
-    "key_breakdown": "Chi tiết theo khóa API",
     "api_key": "Khóa API",
-    "models_used": "Mô hình đã dùng",
-    "key_actions": "Thao tác",
     "rename_key": "Đặt tên khóa",
     "rename_key_a11y": "Đặt tên cho {{key}}",
-    "selected_key": "Khóa API đã chọn",
     "key_name": "Tên khóa API",
     "key_name_hint": "Để trống để hiển thị tiền tố khóa đã che.",
     "key_name_error": "Không thể lưu tên. Hãy thử lại.",
@@ -2525,6 +2521,11 @@
     "reason_legacy_unpriced": "Lượt cũ không có giá đã lưu: {{count}}",
     "reason_unknown_token_accounting": "Dữ liệu token chưa đầy đủ: {{count}}",
     "reason_other": "Không có giá: {{count}}",
-    "token_coverage": "Dựa trên {{known}} / {{total}} lượt"
+    "token_coverage": "Dựa trên {{known}} / {{total}} lượt",
+    "manage_key_names": "Quản lý tên khóa",
+    "key_names_title": "Tên khóa API",
+    "back_to_usage": "Quay lại mức sử dụng",
+    "key_names_description": "Đặt tên cho các khóa API đã ghi nhận mức sử dụng. Tên sẽ xuất hiện trong bộ chọn mức sử dụng.",
+    "key_names_empty": "Khóa sẽ xuất hiện tại đây sau yêu cầu đầu tiên được ghi nhận."
   }
 }

@@ -292,27 +292,40 @@
   }
 }
 
-.keySection {
-  margin: 32px 0;
-  h2 {
-    font-size: 16px;
-    margin-bottom: 0;
-  }
-}
 .keyHint {
   display: block;
   color: var(--text-secondary);
   font-size: 11px;
   margin-top: 6px;
 }
-.tableWrap .keyModels {
-  white-space: normal;
-  overflow-wrap: anywhere;
-  min-width: 120px;
-  max-width: 260px;
-  text-align: left;
-}
 .keyEditor {
   margin-top: 20px;
   max-width: 440px;
+}
+
+.keyList {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+  max-width: 720px;
+  > li {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+.keyRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  > button {
+    flex-shrink: 0;
+  }
+}
+.header {
+  flex-wrap: wrap;
 }
