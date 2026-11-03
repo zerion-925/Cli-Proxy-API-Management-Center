@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import type { ClientUsage, UsageMetrics, UsageRange } from '@/services/api/clientUsage';
 import { formatEstimatedUsd } from '../pricing';
+import { ApiKeyUsage } from './ApiKeyUsage';
+import { clientDisplayName } from '../clientNames';
 import { UsageBreakdown } from './UsageBreakdown';
 import { chronologicalBuckets, type UsageMetric } from '../usageBreakdown';
 import styles from './ClientUsageMeter.module.scss';
@@ -17,6 +19,7 @@ interface Props {
   onRangeChange: (range: UsageRange) => void;
   onClientChange: (client: string) => void;
   onRefresh: () => void;
+  onSaveName?: (client: string, name: string) => Promise<void>;
 }
 const number = (value: number) => value.toLocaleString();
 
@@ -28,6 +31,7 @@ export function ClientUsageView({
   onRangeChange,
   onClientChange,
   onRefresh,
+  onSaveName,
 }: Props) {
   const { t, i18n } = useTranslation();
   const [breakdown, setBreakdown] = useState<'model' | 'time'>('model');
@@ -57,7 +61,9 @@ export function ClientUsageView({
     data?.timeline.filter((row) => Date.parse(row.time) + bucketMs > coveredFrom) ?? []
   );
   const observedTokens = (value: number, metrics: UsageMetrics) =>
-    value === 0 && metrics.attempts > 0 ? t('usage_meter.unavailable') : number(value);
+    value === 0 && metrics.totalTokens === 0 && metrics.attempts > 0
+      ? t('usage_meter.unavailable')
+      : number(value);
   const series = [
     { key: 'totalTokens', label: 'total_tokens', color: 'var(--text-primary)' },
     { key: 'cacheReadTokens', label: 'cache_read', color: 'var(--viz-success)' },
@@ -94,7 +100,7 @@ export function ClientUsageView({
       label:
         entry.namespace === 'unattributed'
           ? t('usage_meter.unattributed')
-          : `${t(`usage_meter.namespace_${entry.namespace}`)} · ${entry.id.slice(-10)}`,
+          : clientDisplayName(entry, t('usage_meter.api_key'), data?.clients),
     })) ?? []),
   ];
 
@@ -174,6 +180,22 @@ export function ClientUsageView({
               )}
             </p>
           )}
+          {data.pricing.unpricedAttempts > 0 && (
+            <p className={styles.coverage} role="status">
+              {t('usage_meter.cost_coverage', {
+                priced: data.pricing.pricedAttempts,
+                total: totals.attempts,
+              })}
+              {Object.entries(totals.unpricedReasons ?? {}).map(([reason, count]) => (
+                <span key={reason}>
+                  {t(`usage_meter.reason_${reason}`, {
+                    count,
+                    defaultValue: t('usage_meter.reason_other', { count }),
+                  })}
+                </span>
+              ))}
+            </p>
+          )}
           <div className={styles.overview}>
             <dl className={styles.summary}>
               <div>
@@ -204,7 +226,15 @@ export function ClientUsageView({
               </div>
               <div>
                 <dt>{t('usage_meter.cache_rate')}</dt>
-                <dd>{percent(totals.cacheRate)}</dd>
+                <dd>{percent(totals.accountedCacheRate ?? totals.cacheRate)}</dd>
+                {totals.accountedAttempts > 0 && totals.accountedAttempts < totals.attempts && (
+                  <small>
+                    {t('usage_meter.token_coverage', {
+                      known: totals.accountedAttempts,
+                      total: totals.attempts,
+                    })}
+                  </small>
+                )}
               </div>
             </dl>
 
@@ -314,6 +344,9 @@ export function ClientUsageView({
               </>
             )}
           </div>
+          {data.clientUsage.length > 0 && (
+            <ApiKeyUsage data={data} onClientChange={onClientChange} onSaveName={onSaveName} />
+          )}
           {totals.attempts > 0 && (
             <>
               <dl className={styles.tokens}>
@@ -330,7 +363,19 @@ export function ClientUsageView({
                 ))}
                 <div>
                   <dt>{t('usage_meter.uncached_input')}</dt>
-                  <dd>{t('usage_meter.unavailable')}</dd>
+                  <dd>
+                    {totals.uncachedInputTokens === null
+                      ? t('usage_meter.unavailable')
+                      : number(totals.uncachedInputTokens)}
+                  </dd>
+                  {totals.accountedAttempts > 0 && totals.accountedAttempts < totals.attempts && (
+                    <small className={styles.note}>
+                      {t('usage_meter.token_coverage', {
+                        known: totals.accountedAttempts,
+                        total: totals.attempts,
+                      })}
+                    </small>
+                  )}
                 </div>
                 <div>
                   <dt>{t('usage_meter.output')}</dt>
@@ -357,7 +402,9 @@ export function ClientUsageView({
                 ).map(([key, value]) => (
                   <div key={key}>
                     <dt>{t(`usage_meter.${key}`)}</dt>
-                    <dd>{observedTokens(value, totals)}</dd>
+                    <dd>
+                      {key === 'unclassified_cache' ? number(value) : observedTokens(value, totals)}
+                    </dd>
                   </div>
                 ))}
               </dl>

@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores';
 import { apiClient } from '@/services/api/client';
-import { fetchClientUsage, type ClientUsage, type UsageRange } from '@/services/api/clientUsage';
+import {
+  fetchClientUsage,
+  saveClientName,
+  type ClientUsage,
+  type UsageRange,
+} from '@/services/api/clientUsage';
 import { ClientUsageView, type UsageStatus } from './ClientUsageView';
 
 export function ClientUsageMeter() {
@@ -80,10 +85,18 @@ export function ClientUsageMeter() {
       : (visible?.status ?? 'loading');
   return (
     <ClientUsageView
+      key={revision}
       data={status === 'ready' ? (visible?.data ?? null) : null}
       status={status}
       range={range}
       client={client}
+      onSaveName={async (id, name) => {
+        await saveClientName(apiBase, id, name);
+        if (apiClient.getConnectionRevision() === revision) {
+          setResult(null);
+          setRefresh((value) => value + 1);
+        }
+      }}
       onRangeChange={setRange}
       onClientChange={(client) => setSelection({ revision, client })}
       onRefresh={() => {

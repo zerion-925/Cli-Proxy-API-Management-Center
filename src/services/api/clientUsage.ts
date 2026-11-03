@@ -5,6 +5,10 @@ import { isRecord } from '@/utils/helpers';
 export type UsageRange = '24h' | '7d' | '30d' | '90d';
 export type UsageBucket = 'hour' | 'day';
 export interface UsageMetrics {
+  accountedAttempts: number;
+  uncachedInputTokens: number | null;
+  accountedCacheRate: number | null;
+  unpricedReasons?: Record<string, number>;
   attempts: number;
   succeeded: number;
   failed: number;
@@ -49,7 +53,13 @@ export interface ClientUsage {
     missingExecutionIds: number;
   };
   window: { from: string; to: string; bucket: UsageBucket };
-  clients: { id: string; namespace: 'native' | 'plugin' | 'unattributed' }[];
+  clients: {
+    id: string;
+    namespace: 'native' | 'plugin' | 'unattributed';
+    name: string;
+    keyHint: string;
+  }[];
+  clientUsage: (UsageMetrics & { clientId: string; models: string[] })[];
   selectedClient: string | null;
   totals: UsageMetrics;
   timeline: (UsageMetrics & { time: string })[];
@@ -150,7 +160,27 @@ const metrics = (value: unknown): UsageMetrics => {
   const rate = raw.cache_rate;
   if (rate !== null && (typeof rate !== 'number' || !Number.isFinite(rate) || rate < 0 || rate > 1))
     invalid();
+  const accountedRate = raw.accounted_cache_rate;
+  if (
+    accountedRate !== undefined &&
+    accountedRate !== null &&
+    (typeof accountedRate !== 'number' ||
+      !Number.isFinite(accountedRate) ||
+      accountedRate < 0 ||
+      accountedRate > 1)
+  )
+    invalid();
   const result: UsageMetrics = {
+    accountedAttempts: raw.accounted_attempts === undefined ? 0 : count(raw.accounted_attempts),
+    uncachedInputTokens:
+      raw.uncached_input_tokens === undefined || raw.uncached_input_tokens === null
+        ? null
+        : count(raw.uncached_input_tokens),
+    accountedCacheRate:
+      accountedRate === undefined || accountedRate === null ? null : (accountedRate as number),
+    unpricedReasons: Object.fromEntries(
+      Object.entries(record(raw.unpriced_reasons ?? {})).map(([key, value]) => [key, count(value)])
+    ),
     attempts: count(raw.attempts),
     succeeded: count(raw.succeeded),
     failed: count(raw.failed),
@@ -172,6 +202,7 @@ const metrics = (value: unknown): UsageMetrics => {
     estimatedCacheSavingsUsd: money(raw.estimated_cache_savings_usd, true),
   };
   if (
+    result.accountedAttempts > result.attempts ||
     result.pricedAttempts > result.attempts ||
     result.savingsPricedAttempts > result.pricedAttempts ||
     (result.pricedAttempts === 0 && result.estimatedCostUsd !== null) ||
@@ -220,12 +251,21 @@ export const normalizeClientUsage = (value: unknown): ClientUsage => {
     clients: list(raw.clients, 10001).map((value) => {
       const client = record(value);
       if (!['native', 'plugin', 'unattributed'].includes(String(client.namespace))) invalid();
-      // Never display server labels, which might contain a raw key in a misconfigured service.
+      // Ignore legacy labels. Only use explicit administrator names and validated masked hints.
+      const hint = client.key_hint === undefined ? '' : text(client.key_hint);
+      if (hint && !/^[a-zA-Z0-9_.:-]{0,8}••••$/.test(hint)) invalid();
       return {
         id: id(client.id),
+        name: client.name === undefined ? '' : text(client.name),
+        keyHint: hint,
         namespace: client.namespace as ClientUsage['clients'][number]['namespace'],
       };
     }),
+    clientUsage: list(raw.client_usage ?? [], 10001).map((value) => ({
+      ...metrics(value),
+      clientId: id(record(value).client),
+      models: list(record(value).models, 10001).map(text),
+    })),
     selectedClient: raw.selected_client === null ? null : id(raw.selected_client),
     totals,
     timeline: list(raw.timeline, 2161).map((value) => ({
@@ -257,4 +297,13 @@ export const fetchClientUsage = async (
     signal,
   });
   return normalizeClientUsage(raw);
+};
+
+export const saveClientName = async (
+  apiBase: string,
+  client: string,
+  name: string
+): Promise<void> => {
+  const connection = apiClient.captureConnection();
+  await connection.put(`${usageMeterUrl(apiBase)}/client-label`, { client, name });
 };

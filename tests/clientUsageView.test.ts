@@ -119,3 +119,23 @@ describe('client meter presentation', () => {
     expect(render({ data })).toContain('usage_meter.empty');
   });
 });
+
+test('shows covered uncached input, partial cache rate, and measured zero counters', () => {
+  const data = normalizeClientUsage({
+    ...response,
+    totals: {
+      ...response.totals,
+      accounted_attempts: 2,
+      uncached_input_tokens: 60,
+      accounted_cache_rate: 0.4,
+      cache_rate: null,
+      cache_write_tokens: 0,
+      unclassified_cached_tokens: 0,
+    },
+  });
+  const html = render({ data });
+  expect(html).toContain('<dd>60</dd>');
+  expect(html).toContain('<dd>40%</dd>');
+  expect(html).toContain('usage_meter.token_coverage');
+  expect(html.match(/<dd>0<\/dd>/g)?.length).toBeGreaterThanOrEqual(2);
+});
